@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnyRate</title>
+  <style>
+    h1, h2, h3, h4 {
+      margin: 5px 0px;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+  <h1>AnyRate</h1>
+  <div><em>Blockchain Billing</em></div>
+  <h2>Sources</h2>
+  <hr>
+  <h3>Source Name</h3>
+  <input type="text" />
+  <h3>Type</h3>
+  <select>
+    <option>Quantitative</option>
+    <option>Categorical</option>
+  </select>
+  <h2>Condition</h2>
+  <h3>Threshold (if type == quantitative)</h3>
+  <input type="number">
+  <h3>Value (if type == categorical)</h3>
+  <input type="text">
+  <h2>Action</h2>
+  <select>
+    <option>Debit</option>
+    <option>Credit</option>
+    <option>Notify</option>
+  </select>
+  <div>
+    Rate <input type="number">
+  </div>
+  <div>
+    Amount<input type="number">
+  </div>
+  <!-- <div>
+    Message (if action == notify) <input type="text">
+  </div> -->
+  <div>
+    API URL <input type="text">
+  </div>
+</body>
+</html>
