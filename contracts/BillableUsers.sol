@@ -1,23 +1,29 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.7.6;
+pragma solidity ^0.8.2;
 
 contract BillableUsers {
-  address companyTreasury;
-  address anyRateTreasury;
+  address payable companyTreasury;
+  address payable anyRateTreasury;
 
   mapping(address => uint256) public userBalances;
 
-  constructor(address _companyTreasury, address _anyRateTreasury) {
+  constructor(address payable _companyTreasury, address payable _anyRateTreasury) {
     anyRateTreasury = _anyRateTreasury;
     companyTreasury = _companyTreasury;
   }
 
-  function depositFrom(address from, uint256 amount) public {
-    userBalances[user] += amount;
+  function depositFrom(address from, uint256 value) payable {
+    userBalances[from] += amount;
+    event Receive(uint value);
+
+    function () payable {
+      Receive(msg.value);
+    }
   }
 
-  function withdrawTo(address to, uint256 amount) public {
+  function withdrawTo(address from, address payable to, uint256 value) payable {
     require(this.balance > amount, 'There is not enough ether to withdraw');
-    userBalances[user] -= amount;
+    userBalances[from] -= amount;
+    to.transfer(amount);
   }
 }

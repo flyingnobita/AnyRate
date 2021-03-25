@@ -1,4 +1,5 @@
-pragma solidity ^7.6.2;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.2;
 
 contract Billing {
   address companyTreasury;

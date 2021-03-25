@@ -1,0 +1,12 @@
+{
+  "name": "anyrate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/AnyRate/AnyRate.git",
+  "author": "Sam Hodak <slhodak@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@openzeppelin/contracts": "3.3.0",
+    "ethereum-waffle": "3.2.1"
+  }
+}
