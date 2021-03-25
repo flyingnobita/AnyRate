@@ -7,21 +7,24 @@ import './Treasury.sol';
 contract Billing {
   Treasury companyTreasury;
   Treasury anyRateTreasury;
-  BillableAccounts billableAccounts;
+  BillableAccounts public billableAccounts;
   uint256 anyRateFee;
 
   string[] accounts;
 
-  constructor(Treasury _companyTreasury, Treasury _anyRateTreasury, BillableAccounts _billableAccounts, uint256 _anyRateFee) {
+  constructor(Treasury _companyTreasury, Treasury _anyRateTreasury, uint256 _anyRateFee) {
     companyTreasury = _companyTreasury;
     anyRateTreasury = _anyRateTreasury;
-    billableAccounts = _billableAccounts;
     anyRateFee = _anyRateFee;
+  }
+
+  function setBillableAccounts(address _billableAccounts) public {
+    billableAccounts = BillableAccounts(_billableAccounts);
   }
 
   // TODO: figure out how much they owe
 
-  function requestBill(string memory account, uint256 payment, uint256 fee) public {
+  function requestBill(string calldata account, uint256 payment, uint256 fee) public {
     billableAccounts.bill(account, payment, fee);
   }
 

@@ -4,17 +4,21 @@ pragma solidity ^0.8.2;
 contract BillableAccounts {
   address payable companyTreasury;
   address payable anyRateTreasury;
-  address payable billingContract;
+  address payable public billingContract;
 
   event Deposit(address from, string to, uint256 value);
   event Transfer(string from, address to, uint256 value);
   event InsufficientFunds(string account, uint256 funds);
+  event BillRequested(address requester);
 
   mapping(string => uint256) public accountBalances; // Tracks who deposited how much value
 
-  constructor(address payable _companyTreasury, address payable _anyRateTreasury, address payable _billingContract) {
+  constructor(address payable _companyTreasury, address payable _anyRateTreasury) {
     anyRateTreasury = _anyRateTreasury;
     companyTreasury = _companyTreasury;
+  }
+
+  function setBillingContract(address payable _billingContract) public {
     billingContract = _billingContract;
   }
 
@@ -24,11 +28,11 @@ contract BillableAccounts {
     emit Deposit(msg.sender, account, msg.value);
   }
 
-  // Message sender sends to treasuries
-  function transferFrom(string memory account, address payable to, uint256 value) public {
+  // Message sender sends to a treasury
+  function transferFrom(string calldata account, address payable to, uint256 value) public {
     require(msg.sender == billingContract, 'Only the billing contract may withdraw');
     require(to == companyTreasury || to == anyRateTreasury, "You may only transfer to the contract's client or operator");
-    if(accountBalances[account] >= value) {
+    if(accountBalances[account] < value) {
       emit InsufficientFunds(account, accountBalances[account]);
     } else {
       accountBalances[account] -= value;
@@ -40,10 +44,10 @@ contract BillableAccounts {
   // Pay treasuries specified amounts
   function bill(string memory account, uint256 payment, uint256 fee) public {
     require(msg.sender == billingContract, 'Only the billing contract may withdraw');
-    if(accountBalances[account] >= payment + fee) {
+    if(accountBalances[account] < (payment + fee)) {
       emit InsufficientFunds(account, accountBalances[account]);
     } else {
-      accountBalances[account] -= payment + fee;
+      accountBalances[account] -= (payment + fee);
       companyTreasury.transfer(payment);
       emit Transfer(account, companyTreasury, payment);
       anyRateTreasury.transfer(fee);
