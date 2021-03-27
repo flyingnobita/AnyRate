@@ -21,71 +21,73 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"node\",\"type\":\"bytes32\"}],\"name\":\"addr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"@chainlink/contracts/src/v0.7/vendor/ENSResolver.sol\":\"ENSResolver\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@chainlink/contracts/src/v0.7/vendor/ENSResolver.sol\":{\"keccak256\":\"0xeaeeab9e72f50bbfd1feeaf2c039a6586a04873b419330a7d6ca30d143be037d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://50a275840f614c8c686cb48da9b48960bc439292945b37baf93a337d0cd19b21\",\"dweb:/ipfs/Qme96jhN3CEZg42fTQgWJiyAt7c99vtcHd7QcKjVzJhn6A\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.6+commit.6c089d02\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"node\",\"type\":\"bytes32\"}],\"name\":\"addr\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"@chainlink/contracts/src/v0.6/vendor/ENSResolver.sol\":\"ENSResolver\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@chainlink/contracts/src/v0.6/vendor/ENSResolver.sol\":{\"keccak256\":\"0xfd992937d215ad669f69e91fefbe62cad8973ae329b4e810ca9b26a1ae0b6bb7\",\"urls\":[\"bzz-raw://afb189e69fb705795bf41dea9ff20bab191164fc4876803168372f9bf1a1a0f1\",\"dweb:/ipfs/QmUBbNkFiJh9BrPepNVYMpxnEk1a5xqun8VT6Zb2jC3FtV\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
-  "generatedSources": [],
-  "deployedGeneratedSources": [],
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.7.0;\n\nabstract contract ENSResolver {\n  function addr(bytes32 node) public view virtual returns (address);\n}\n",
-  "sourcePath": "@chainlink/contracts/src/v0.7/vendor/ENSResolver.sol",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.6.0;\n\nabstract contract ENSResolver {\n  function addr(bytes32 node) public view virtual returns (address);\n}\n",
+  "sourcePath": "@chainlink/contracts/src/v0.6/vendor/ENSResolver.sol",
   "ast": {
-    "absolutePath": "@chainlink/contracts/src/v0.7/vendor/ENSResolver.sol",
+    "absolutePath": "@chainlink/contracts/src/v0.6/vendor/ENSResolver.sol",
     "exportedSymbols": {
       "ENSResolver": [
-        2497
+        2429
       ]
     },
-    "id": 2498,
-    "license": "MIT",
+    "id": 2430,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 2489,
+        "id": 2421,
         "literals": [
           "solidity",
           "^",
-          "0.7",
+          "0.6",
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "32:23:12"
+        "src": "32:23:11"
       },
       {
         "abstract": true,
         "baseContracts": [],
         "contractDependencies": [],
         "contractKind": "contract",
+        "documentation": null,
         "fullyImplemented": false,
-        "id": 2497,
+        "id": 2429,
         "linearizedBaseContracts": [
-          2497
+          2429
         ],
         "name": "ENSResolver",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
+            "body": null,
+            "documentation": null,
             "functionSelector": "3b3b57de",
-            "id": 2496,
+            "id": 2428,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "addr",
             "nodeType": "FunctionDefinition",
+            "overrides": null,
             "parameters": {
-              "id": 2492,
+              "id": 2424,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2491,
+                  "id": 2423,
                   "mutability": "mutable",
                   "name": "node",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2496,
-                  "src": "105:12:12",
+                  "overrides": null,
+                  "scope": 2428,
+                  "src": "105:12:11",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -93,32 +95,34 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 2490,
+                    "id": 2422,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "105:7:12",
+                    "src": "105:7:11",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
+                  "value": null,
                   "visibility": "internal"
                 }
               ],
-              "src": "104:14:12"
+              "src": "104:14:11"
             },
             "returnParameters": {
-              "id": 2495,
+              "id": 2427,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2494,
+                  "id": 2426,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2496,
-                  "src": "148:7:12",
+                  "overrides": null,
+                  "scope": 2428,
+                  "src": "148:7:11",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -126,43 +130,43 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2493,
+                    "id": 2425,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "148:7:12",
+                    "src": "148:7:11",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
+                  "value": null,
                   "visibility": "internal"
                 }
               ],
-              "src": "147:9:12"
+              "src": "147:9:11"
             },
-            "scope": 2497,
-            "src": "91:66:12",
+            "scope": 2429,
+            "src": "91:66:11",
             "stateMutability": "view",
             "virtual": true,
             "visibility": "public"
           }
         ],
-        "scope": 2498,
-        "src": "57:102:12"
+        "scope": 2430,
+        "src": "57:102:11"
       }
     ],
-    "src": "32:128:12"
+    "src": "32:128:11"
   },
   "legacyAST": {
     "attributes": {
-      "absolutePath": "@chainlink/contracts/src/v0.7/vendor/ENSResolver.sol",
+      "absolutePath": "@chainlink/contracts/src/v0.6/vendor/ENSResolver.sol",
       "exportedSymbols": {
         "ENSResolver": [
-          2497
+          2429
         ]
-      },
-      "license": "MIT"
+      }
     },
     "children": [
       {
@@ -170,13 +174,13 @@
           "literals": [
             "solidity",
             "^",
-            "0.7",
+            "0.6",
             ".0"
           ]
         },
-        "id": 2489,
+        "id": 2421,
         "name": "PragmaDirective",
-        "src": "32:23:12"
+        "src": "32:23:11"
       },
       {
         "attributes": {
@@ -188,16 +192,19 @@
             null
           ],
           "contractKind": "contract",
+          "documentation": null,
           "fullyImplemented": false,
           "linearizedBaseContracts": [
-            2497
+            2429
           ],
           "name": "ENSResolver",
-          "scope": 2498
+          "scope": 2430
         },
         "children": [
           {
             "attributes": {
+              "body": null,
+              "documentation": null,
               "functionSelector": "3b3b57de",
               "implemented": false,
               "isConstructor": false,
@@ -206,7 +213,8 @@
                 null
               ],
               "name": "addr",
-              "scope": 2497,
+              "overrides": null,
+              "scope": 2429,
               "stateMutability": "view",
               "virtual": true,
               "visibility": "public"
@@ -219,10 +227,12 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "node",
-                      "scope": 2496,
+                      "overrides": null,
+                      "scope": 2428,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "bytes32",
+                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -231,19 +241,19 @@
                           "name": "bytes32",
                           "type": "bytes32"
                         },
-                        "id": 2490,
+                        "id": 2422,
                         "name": "ElementaryTypeName",
-                        "src": "105:7:12"
+                        "src": "105:7:11"
                       }
                     ],
-                    "id": 2491,
+                    "id": 2423,
                     "name": "VariableDeclaration",
-                    "src": "105:12:12"
+                    "src": "105:12:11"
                   }
                 ],
-                "id": 2492,
+                "id": 2424,
                 "name": "ParameterList",
-                "src": "104:14:12"
+                "src": "104:14:11"
               },
               {
                 "children": [
@@ -252,10 +262,12 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "scope": 2496,
+                      "overrides": null,
+                      "scope": 2428,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
+                      "value": null,
                       "visibility": "internal"
                     },
                     "children": [
@@ -265,50 +277,46 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 2493,
+                        "id": 2425,
                         "name": "ElementaryTypeName",
-                        "src": "148:7:12"
+                        "src": "148:7:11"
                       }
                     ],
-                    "id": 2494,
+                    "id": 2426,
                     "name": "VariableDeclaration",
-                    "src": "148:7:12"
+                    "src": "148:7:11"
                   }
                 ],
-                "id": 2495,
+                "id": 2427,
                 "name": "ParameterList",
-                "src": "147:9:12"
+                "src": "147:9:11"
               }
             ],
-            "id": 2496,
+            "id": 2428,
             "name": "FunctionDefinition",
-            "src": "91:66:12"
+            "src": "91:66:11"
           }
         ],
-        "id": 2497,
+        "id": 2429,
         "name": "ContractDefinition",
-        "src": "57:102:12"
+        "src": "57:102:11"
       }
     ],
-    "id": 2498,
+    "id": 2430,
     "name": "SourceUnit",
-    "src": "32:128:12"
+    "src": "32:128:11"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.7.6+commit.7338295f.Emscripten.clang"
+    "version": "0.6.6+commit.6c089d02.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-03-27T07:38:12.115Z",
+  "updatedAt": "2021-03-27T08:17:34.271Z",
   "devdoc": {
-    "kind": "dev",
-    "methods": {},
-    "version": 1
+    "methods": {}
   },
   "userdoc": {
-    "kind": "user",
-    "methods": {},
-    "version": 1
+    "methods": {}
   }
 }

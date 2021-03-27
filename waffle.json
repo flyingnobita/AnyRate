@@ -1,6 +1,6 @@
 {
   "compilerType": "solcjs",
-  "compilerVersion": "0.8.2",
+  "compilerVersion": "0.6.6",
   "sourceDirectory": "./contracts",
-  "outputDirectory": "./build"
+  "outputDirectory": "./build/mandala"
 }
