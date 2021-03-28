@@ -1,7 +1,8 @@
 ## Setup
-Install yarn  
 `yarn install`  
 
-Build contracts  
+## Compile Contracts for Acala
+  
 `yarn waffle`  
 See  `waffle.json`  
+
