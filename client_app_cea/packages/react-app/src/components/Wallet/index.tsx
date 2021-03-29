@@ -46,7 +46,9 @@ const Wallet = () => {
         {active && chainId ? (
           <WalletConnected disconnect={disconnect} chainId={chainId} />
         ) : (
-          <MetaMaskButton onClick={connect}>Connect</MetaMaskButton>
+          <MetaMaskButton.Outline onClick={connect}>
+            Connect
+          </MetaMaskButton.Outline>
         )}
       </div>
     </div>
