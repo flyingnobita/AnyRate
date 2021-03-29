@@ -38,6 +38,8 @@
     "ipfs-http-client": "^45.0.0",
     "react": "16.14.0",
     "react-dom": "16.14.0",
+    "react-focus-lock": "^2.5.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "rimble-ui": "^0.14.0",
     "styled-components": "^5.2.1",
