@@ -15,6 +15,7 @@
   "dependencies": {
     "@acala-network/api": "^0.7.1",
     "@acala-network/bodhi": "^0.2.1",
+    "@polkadot/api": "^4.2.1",
     "@types/express": "^4.17.11",
     "@types/node": "^14.14.37",
     "@types/react": "^17.0.3",
