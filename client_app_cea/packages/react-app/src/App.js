@@ -6,10 +6,10 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { BaseStyles } from "rimble-ui";
 import { ThemeProvider } from "styled-components";
 import { Burger, Menu } from "./components";
-import Wallet from "./components/Wallet";
+import Header from "./components/Header";
 import { GlobalStyles } from "./global";
 import { useOnClickOutside } from "./hooks";
-// import AnyRate from "./pages/AnyRate";
+import AnyRate from "./pages/AnyRate";
 import Landing from "./pages/Landing";
 import { customTheme } from "./theme";
 
@@ -31,6 +31,7 @@ function App() {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <BrowserRouter>
+        <Header />
         <ThemeProvider theme={customTheme}>
           <BaseStyles>
             <GlobalStyles />
@@ -40,15 +41,9 @@ function App() {
                 <Menu open={open} setOpen={setOpen} id={menuId} />
               </FocusLock>
             </div>
-            <Wallet />
-            <div>
-              <img
-                src="https://image.flaticon.com/icons/svg/2016/2016012.svg"
-                alt="burger icon"
-              />
-            </div>
             <Switch>
               <Route exact path={"/"} component={Landing} />
+              <Route exact path={"/oracle"} component={AnyRate} />
             </Switch>
           </BaseStyles>
         </ThemeProvider>

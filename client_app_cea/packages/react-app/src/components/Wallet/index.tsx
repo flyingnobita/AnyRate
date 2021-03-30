@@ -42,11 +42,11 @@ const Wallet = () => {
 
   return (
     <div>
-      <div style={{ paddingTop: 10 }}>
+      <div>
         {active && chainId ? (
           <WalletConnected disconnect={disconnect} chainId={chainId} />
         ) : (
-          <MetaMaskButton.Outline onClick={connect}>
+          <MetaMaskButton.Outline size="small" onClick={connect}>
             Connect
           </MetaMaskButton.Outline>
         )}

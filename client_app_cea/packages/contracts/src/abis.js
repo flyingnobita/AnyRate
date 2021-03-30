@@ -1,9 +1,9 @@
-import erc20Abi from "./abis/erc20.json";
+import anyRateOracle from "./abis/anyRateOracle.json";
 import ownableAbi from "./abis/ownable.json";
 
 const abis = {
-  erc20: erc20Abi,
   ownable: ownableAbi,
+  anyRateOracle: anyRateOracle,
 };
 
 export default abis;

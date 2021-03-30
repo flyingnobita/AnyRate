@@ -24,7 +24,9 @@ export default function WalletConnected({
 
   return (
     <div>
-      <Button onClick={disconnect}>{addressDisplayed}</Button>
+      <Button size="small" onClick={disconnect}>
+        {addressDisplayed}
+      </Button>
     </div>
   );
 }

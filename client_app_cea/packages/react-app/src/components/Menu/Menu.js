@@ -12,6 +12,10 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">💁🏻‍♂️</span>
         Home
       </a>
+      <a href="/oracle" tabIndex={tabIndex}>
+        <span aria-hidden="true">💁🏻‍♂️</span>
+        Oracle
+      </a>
     </StyledMenu>
   );
 };
