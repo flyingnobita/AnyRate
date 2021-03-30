@@ -2,5 +2,5 @@
   "compilerType": "solcjs",
   "compilerVersion": "0.6.6",
   "sourceDirectory": "./contracts",
-  "outputDirectory": "./build/mandala"
+  "outputDirectory": "./build"
 }
