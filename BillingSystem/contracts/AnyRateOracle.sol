@@ -36,10 +36,12 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
     }
 
     function getUsage() public view returns (uint256) {
+        // TODO also return timestamp
         return usage;
     }
 
     function getUnitCost() public view returns (uint256) {
+        // TODO also return timestamp
         return unitCost;
     }
 
