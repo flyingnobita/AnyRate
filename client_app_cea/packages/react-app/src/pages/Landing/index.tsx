@@ -84,138 +84,138 @@ const Landing = () => {
   };
 
   return (
-      <Flex alignItems="center" alignContent="center" justifyContent="center">
-        <Box width={[9 / 10]} maxWidth={800} mt={4}>
-          <Form onSubmit={handleSubmit} validated={formValidated}>
-            <Card maxWidth={1000}>
-              <Box>
-                <Heading as={"h1"}>Blockchain Billing</Heading>
-              </Box>
+    <Flex alignItems="center" alignContent="center" justifyContent="center">
+      <Box width={[9 / 10]} maxWidth={800} marginTop={4}>
+        <Form onSubmit={handleSubmit} validated={formValidated}>
+          <Card maxWidth={1000}>
+            <Box marginBottom={2}>
+              <Heading as={"h1"}>Blockchain Billing</Heading>
+            </Box>
 
-              {/* Sources */}
-              <Flex flexDirection="column" alignItems="flex-start">
-                <Heading as={"h2"}>Sources</Heading>
-                <Heading as={"h3"}>Source Name</Heading>
+            {/* Sources */}
+            <Flex flexDirection="column" alignItems="flex-start">
+              <Heading as={"h2"}>Sources</Heading>
+              <Heading as={"h3"}>Source Name</Heading>
 
-                <Field label="Type">
-                  <Select
-                    options={[
-                      { value: "categorical", label: "Categorical" },
-                      { value: "quantitative", label: "Quantitative" },
-                    ]}
+              <Field label="Type">
+                <Select
+                  options={[
+                    { value: "categorical", label: "Categorical" },
+                    { value: "quantitative", label: "Quantitative" },
+                  ]}
+                  required
+                  value={sourceType}
+                  onChange={handleSourceType}
+                />
+              </Field>
+            </Flex>
+
+            {/* Condition */}
+            <Flex flexDirection="column" alignItems="flex-start">
+              <Heading as={"h2"}>Condition</Heading>
+
+              {sourceType == "quantitative" && (
+                <Field label="Threshold">
+                  <Input
+                    type="number"
                     required
-                    value={sourceType}
-                    onChange={handleSourceType}
+                    placeholder="e.g. 123"
+                    onChange={handleQuantitativeThreshold}
+                    value={quantitativeThreshold}
                   />
                 </Field>
-              </Flex>
+              )}
 
-              {/* Condition */}
-              <Flex flexDirection="column" alignItems="flex-start">
-                <Heading as={"h2"}>Condition</Heading>
+              {sourceType == "categorical" && (
+                <Field label="Value">
+                  <Input
+                    type="text"
+                    placeholder="e.g."
+                    required
+                    onChange={handleCategoricalValue}
+                    value={categoricalValue}
+                  />
+                </Field>
+              )}
+            </Flex>
 
-                {sourceType == "quantitative" && (
-                  <Field label="Threshold">
+            {/* Action */}
+            <Flex
+              flexDirection="column"
+              alignItems="flex-start"
+              flexWrap={"wrap"}
+            >
+              <Box>
+                <Heading as={"h2"}>Action</Heading>
+              </Box>
+
+              <Flex flexWrap={"wrap"}>
+                <Box mr={2}>
+                  <Field label="Action Value">
+                    <Select
+                      options={[
+                        { value: "credit", label: "Credit" },
+                        { value: "debit", label: "Debit" },
+                        { value: "notify", label: "Notify" },
+                      ]}
+                      required
+                      onChange={handleAction}
+                      value={action}
+                    />
+                  </Field>
+                </Box>
+                <Box mx={2}>
+                  <Field label="Rate">
                     <Input
                       type="number"
+                      placeholder="e.g. 0"
                       required
-                      placeholder="e.g. 123"
-                      onChange={handleQuantitativeThreshold}
-                      value={quantitativeThreshold}
+                      onChange={handleRate}
+                      value={rate}
                     />
                   </Field>
-                )}
-
-                {sourceType == "categorical" && (
-                  <Field label="Value">
-                    <Input
-                      type="text"
-                      placeholder="e.g."
-                      required
-                      onChange={handleCategoricalValue}
-                      value={categoricalValue}
-                    />
-                  </Field>
-                )}
-              </Flex>
-
-              {/* Action */}
-              <Flex
-                flexDirection="column"
-                alignItems="flex-start"
-                flexWrap={"wrap"}
-              >
-                <Box>
-                  <Heading as={"h2"}>Action</Heading>
                 </Box>
-
-                <Flex flexWrap={"wrap"}>
-                  <Box mr={2}>
-                    <Field label="Action Value">
-                      <Select
-                        options={[
-                          { value: "credit", label: "Credit" },
-                          { value: "debit", label: "Debit" },
-                          { value: "notify", label: "Notify" },
-                        ]}
-                        required
-                        onChange={handleAction}
-                        value={action}
-                      />
-                    </Field>
-                  </Box>
-                  <Box mx={2}>
-                    <Field label="Rate">
-                      <Input
-                        type="number"
-                        placeholder="e.g. 0"
-                        required
-                        onChange={handleRate}
-                        value={rate}
-                      />
-                    </Field>
-                  </Box>
-                  <Box ml={2}>
-                    <Field label="Amount">
-                      <Input
-                        type="number"
-                        placeholder="e.g. 0"
-                        required
-                        onChange={handleAmount}
-                        value={amount}
-                      />
-                    </Field>
-                  </Box>
-                </Flex>
-                <Flex>
-                  <Box>
-                    <Button type="submit" disabled={!validated}>
-                      Submit
-                    </Button>
-                  </Box>
-                </Flex>
+                <Box ml={2}>
+                  <Field label="Amount">
+                    <Input
+                      type="number"
+                      placeholder="e.g. 0"
+                      required
+                      onChange={handleAmount}
+                      value={amount}
+                    />
+                  </Field>
+                </Box>
               </Flex>
-            </Card>
-          </Form>
-
-          <Card my={4}>
-            <Heading as={"h4"}>Form values</Heading>
-            <Text>Source Type: {sourceType}</Text>
-            <Text>
-              Quantitative Threshold: {quantitativeThreshold.toString()}
-            </Text>
-            <Text>Categorical Value: {categoricalValue.toString()}</Text>
-            <Text>Action: {action.toString()}</Text>
-            <Text>Valid form: {validated.toString()}</Text>
-            <Checkbox
-              label="Toggle Form Validation"
-              value={formValidated}
-              onChange={(e) => setFormValidated(!formValidated)}
-            />
-            <Text>Form validated: {formValidated.toString()}</Text>
+              <Flex>
+                <Box>
+                  <Button type="submit" disabled={!validated}>
+                    Submit
+                  </Button>
+                </Box>
+              </Flex>
+            </Flex>
           </Card>
-        </Box>
-      </Flex>
+        </Form>
+
+        <Card my={4}>
+          <Heading as={"h4"}>Form values</Heading>
+          <Text>Source Type: {sourceType}</Text>
+          <Text>
+            Quantitative Threshold: {quantitativeThreshold.toString()}
+          </Text>
+          <Text>Categorical Value: {categoricalValue.toString()}</Text>
+          <Text>Action: {action.toString()}</Text>
+          <Text>Valid form: {validated.toString()}</Text>
+          <Checkbox
+            label="Toggle Form Validation"
+            value={formValidated}
+            onChange={(e) => setFormValidated(!formValidated)}
+          />
+          <Text>Form validated: {formValidated.toString()}</Text>
+        </Card>
+      </Box>
+    </Flex>
   );
 };
 
