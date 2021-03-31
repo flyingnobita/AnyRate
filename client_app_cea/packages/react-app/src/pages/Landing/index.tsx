@@ -84,7 +84,6 @@ const Landing = () => {
   };
 
   return (
-    <React.Fragment>
       <Flex alignItems="center" alignContent="center" justifyContent="center">
         <Box width={[9 / 10]} maxWidth={800} mt={4}>
           <Form onSubmit={handleSubmit} validated={formValidated}>
@@ -217,7 +216,6 @@ const Landing = () => {
           </Card>
         </Box>
       </Flex>
-    </React.Fragment>
   );
 };
 
