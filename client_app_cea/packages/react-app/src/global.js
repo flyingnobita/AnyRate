@@ -19,6 +19,7 @@ export const GlobalStyles = createGlobalStyle`
     height: 100vh;
     text-rendering: optimizeLegibility;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    overflow-x: hidden
   }
 
   h1 {
