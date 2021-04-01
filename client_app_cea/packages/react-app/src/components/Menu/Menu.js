@@ -1,5 +1,6 @@
 import { bool } from "prop-types";
 import React from "react";
+import { NavLink } from "react-router-dom";
 import { StyledMenu } from "./Menu.styled";
 
 const Menu = ({ open, ...props }) => {
@@ -8,14 +9,22 @@ const Menu = ({ open, ...props }) => {
 
   return (
     <StyledMenu open={open} aria-hidden={!isHidden} {...props}>
-      <a href="/" tabIndex={tabIndex}>
+      <NavLink to="/" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">🏠</span>
         Home
-      </a>
-      <a href="/oracle" tabIndex={tabIndex}>
+      </NavLink>
+      {/* <a href="/" tabIndex={tabIndex}>
+        <span aria-hidden="true">🏠</span>
+        Home
+      </a> */}
+      <NavLink to="/oracle" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">📀</span>
         Oracle
-      </a>
+      </NavLink>
+      {/* <a href="/oracle" tabIndex={tabIndex}>
+        <span aria-hidden="true">📀</span>
+        Oracle
+      </a> */}
     </StyledMenu>
   );
 };

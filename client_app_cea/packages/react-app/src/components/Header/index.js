@@ -1,5 +1,6 @@
 import React from "react";
-import { Heading, Link } from "rimble-ui";
+import { NavLink } from "react-router-dom";
+import { Heading } from "rimble-ui";
 import Wallet from "../Wallet";
 import { Nav, NavCenter, NavHeader, NavLeft, NavRight } from "./Header.styled";
 
@@ -10,9 +11,9 @@ function Header() {
         <NavLeft></NavLeft>
 
         <NavCenter>
-          <Link href="\" title="Home">
+          <NavLink to="/">
             <Heading as={"h2"}>AnyRate</Heading>
-          </Link>
+          </NavLink>
         </NavCenter>
 
         <NavRight>

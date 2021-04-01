@@ -2,7 +2,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Web3ReactProvider } from "@web3-react/core";
 import React, { useRef, useState } from "react";
 import FocusLock from "react-focus-lock";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch } from "react-router-dom";
 import { BaseStyles } from "rimble-ui";
 import { ThemeProvider } from "styled-components";
 import { Burger, Menu } from "./components";
@@ -30,7 +30,7 @@ function App() {
 
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <BrowserRouter>
+      <HashRouter>
         <Header />
         <ThemeProvider theme={customTheme}>
           <BaseStyles>
@@ -47,7 +47,7 @@ function App() {
             </Switch>
           </BaseStyles>
         </ThemeProvider>
-      </BrowserRouter>
+      </HashRouter>
     </Web3ReactProvider>
   );
 }
