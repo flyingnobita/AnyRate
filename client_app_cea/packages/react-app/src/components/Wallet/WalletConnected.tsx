@@ -18,9 +18,9 @@ export default function WalletConnected({
   );
 
   console.log("userAddress: ", userAddress);
-  const networkName = useMemo(() => (chainId === 1 ? "Mainnet" : "Testnet"), [
-    chainId,
-  ]);
+  // const networkName = useMemo(() => (chainId === 1 ? "Mainnet" : "Testnet"), [
+  //   chainId,
+  // ]);
 
   return (
     <div>

@@ -7,16 +7,9 @@ import { useEagerConnect, useInactiveListener } from "../web3-react/hooks";
 import WalletConnected from "./WalletConnected";
 
 const Wallet = () => {
-  const {
-    connector,
-    library,
-    chainId,
-    account,
-    activate,
-    deactivate,
-    active,
-    error,
-  } = useWeb3React<Web3Provider>();
+  const { connector, chainId, activate, deactivate, active } = useWeb3React<
+    Web3Provider
+  >();
 
   // handle logic to recognize the connector currently being activated
   const [activatingConnector, setActivatingConnector] = React.useState<any>();
