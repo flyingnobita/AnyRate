@@ -114,7 +114,7 @@ const Landing = () => {
             <Flex flexDirection="column" alignItems="flex-start">
               <Heading as={"h2"}>Condition</Heading>
 
-              {sourceType == "quantitative" && (
+              {sourceType === "quantitative" && (
                 <Field label="Threshold">
                   <Input
                     type="number"
@@ -126,7 +126,7 @@ const Landing = () => {
                 </Field>
               )}
 
-              {sourceType == "categorical" && (
+              {sourceType === "categorical" && (
                 <Field label="Value">
                   <Input
                     type="text"
