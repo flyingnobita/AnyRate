@@ -14,40 +14,46 @@ import {
 } from "rimble-ui";
 
 const Landing = () => {
-  const [sourceType, setSourceType] = useState("categorical");
-  const [quantitativeThreshold, setQuantitaviteThreshold] = useState("");
-  const [categoricalValue, setCategoricalValue] = useState("");
-  const [action, setAction] = useState("credit");
-  const [rate, setRate] = useState("");
-  const [amount, setAmount] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [billingType, setBillingType] = useState("time");
+  const [endpoint, setEndpoint] = useState("");
+  const [currency, setCurrency] = useState("BTC");
+  const [frequency, setFrequency] = useState(0);
+  const [rate, setRate] = useState(0);
+  const [overageThreshold, setOverageThreshold] = useState(-1);
 
-  const handleSourceType = (e) => {
-    setSourceType(e.target.value);
+  const handleCompanyName = (e) => {
+    setCompanyName(e.target.value);
     validateInput(e);
   };
 
-  const handleQuantitativeThreshold = (e) => {
-    setQuantitaviteThreshold(e.target.value);
+  const handleBillingType = (e) => {
+    setBillingType(e.target.value);
     validateInput(e);
   };
 
-  const handleCategoricalValue = (e) => {
-    setCategoricalValue(e.target.value);
+  const handleEndpoint = (e) => {
+    setEndpoint(e.target.value);
     validateInput(e);
   };
 
-  const handleAction = (e) => {
-    setAction(e.target.value);
+  const handleOverageThreshold = (e) => {
+    setOverageThreshold(e.target.value);
+    validateInput(e);
+  };
+
+  const handleCurrency = (e) => {
+    setCurrency(e.target.value);
+    validateInput(e);
+  };
+
+  const handleFrequency = (e) => {
+    setFrequency(e.target.value);
     validateInput(e);
   };
 
   const handleRate = (e) => {
     setRate(e.target.value);
-    validateInput(e);
-  };
-
-  const handleAmount = (e) => {
-    setAmount(e.target.value);
     validateInput(e);
   };
 
@@ -60,13 +66,12 @@ const Landing = () => {
 
   const validateForm = () => {
     if (
-      sourceType.length > 0 &&
-      ((sourceType === "quantitative" && quantitativeThreshold.length > 0) ||
-        (sourceType === "categorical" && categoricalValue.length > 0)) &&
-      categoricalValue.length > 0 &&
-      action.length > 0 &&
-      rate.length > 0 &&
-      amount.length > 0
+      companyName.length > 0 &&
+      billingType.length > 0 &&
+      currency.length > 0 &&
+      endpoint.length > 0 &&
+      rate > 0 &&
+      frequency > 0
     ) {
       setValidated(true);
     } else {
@@ -89,124 +94,122 @@ const Landing = () => {
         <Form onSubmit={handleSubmit} validated={formValidated}>
           <Card maxWidth={1000}>
             <Box marginBottom={2}>
-              <Heading as={"h1"}>Blockchain Billing</Heading>
+              <Heading as={"h1"}>Billing Contract</Heading>
             </Box>
 
-            {/* Sources */}
+            {/* User Usage Data Endpoint */}
             <Flex flexDirection="column" alignItems="flex-start">
-              <Heading as={"h2"}>Sources</Heading>
-              <Heading as={"h3"}>Source Name</Heading>
+              <Field label="Company Name">
+                <Input
+                  type="text"
+                  required
+                  placeholder="e.g. Netflix"
+                  value={companyName}
+                  onChange={handleCompanyName}
+                />
+              </Field>
 
+              <Heading as={"h3"}>What currency would you like to be paid in?</Heading>
+              <Field label="Currency">
+                <Select
+                  options={[
+                    { value: "ETH", label: "ETH" },
+                    { value: "BTC", label: "BTC" },
+                    { value: "DAI", label: "DAI" }
+                  ]}
+                  required
+                  value={currency}
+                  onChange={handleCurrency}
+                />
+              </Field>
+
+              <Heading as={"h3"}>Do you charge by time or usage?</Heading>
               <Field label="Type">
                 <Select
                   options={[
-                    { value: "categorical", label: "Categorical" },
-                    { value: "quantitative", label: "Quantitative" },
+                    { value: "time", label: "Time" },
+                    { value: "usage", label: "Usage" },
                   ]}
                   required
-                  value={sourceType}
-                  onChange={handleSourceType}
+                  value={billingType}
+                  onChange={handleBillingType}
                 />
               </Field>
-            </Flex>
-
-            {/* Condition */}
-            <Flex flexDirection="column" alignItems="flex-start">
-              <Heading as={"h2"}>Condition</Heading>
-
-              {sourceType === "quantitative" && (
-                <Field label="Threshold">
+           
+              {/* When billingType is "time", this is not multiplied by usage */}
+              <Flex flexDirection="column" alignItems="flex-start">
+                <Heading as={"h3"}>How much {currency} per {billingType === "usage" ? 'unit' : 'pay period' } does your service cost?</Heading>
+                <Field label="Rate">
                   <Input
                     type="number"
                     required
-                    placeholder="e.g. 123"
-                    onChange={handleQuantitativeThreshold}
-                    value={quantitativeThreshold}
+                    placeholder="0.001"
+                    step="0.000001"
+                    onChange={handleRate}
+                    value={rate}
                   />
                 </Field>
-              )}
 
-              {sourceType === "categorical" && (
-                <Field label="Value">
+              </Flex>
+
+              <Heading as={"h3"}>How often should the customer be charged?</Heading>
+              <Field label="Frequency">
+                <Select
+                // Values in seconds
+                  options={[
+                    { value: 60, label: "per minute" },
+                    { value: 3600, label: "hourly" },
+                    { value: 86400, label: "daily" },
+                    { value: 604800, label: "weekly" },
+                    { value: 2635200, label: "monthly" },
+                    { value: 31471200, label: "annually" }
+                  ]}
+                  required
+                  onChange={handleFrequency}
+                  value={frequency}
+                />
+              </Field>
+
+              <Heading as={"h3"}>Where will we get the latest usage data?</Heading>
+              <Field label="Endpoint">
+                <Input
+                  type="text"
+                  required
+                  placeholder="e.g. https://my-company.provider.com/usage"
+                  onChange={handleEndpoint}
+                  value={endpoint}
+                />
+              </Field>
+
+            </Flex>
+
+            {/* Condition */}
+            {billingType === "usage" && (
+              <Flex flexDirection="column" alignItems="flex-start">
+                <Field label="Overage Threshold">
                   <Input
-                    type="text"
-                    placeholder="e.g."
+                    type="number"
                     required
-                    onChange={handleCategoricalValue}
-                    value={categoricalValue}
+                    placeholder="e.g. 9000"
+                    onChange={handleOverageThreshold}
+                    value={overageThreshold}
                   />
                 </Field>
-              )}
-            </Flex>
 
-            {/* Action */}
-            <Flex
-              flexDirection="column"
-              alignItems="flex-start"
-              flexWrap={"wrap"}
-            >
-              <Box>
-                <Heading as={"h2"}>Action</Heading>
-              </Box>
-
-              <Flex flexWrap={"wrap"}>
-                <Box mr={2}>
-                  <Field label="Action Value">
-                    <Select
-                      options={[
-                        { value: "credit", label: "Credit" },
-                        { value: "debit", label: "Debit" },
-                        { value: "notify", label: "Notify" },
-                      ]}
-                      required
-                      onChange={handleAction}
-                      value={action}
-                    />
-                  </Field>
-                </Box>
-                <Box mx={2}>
-                  <Field label="Rate">
-                    <Input
-                      type="number"
-                      placeholder="e.g. 0"
-                      required
-                      onChange={handleRate}
-                      value={rate}
-                    />
-                  </Field>
-                </Box>
-                <Box ml={2}>
-                  <Field label="Amount">
-                    <Input
-                      type="number"
-                      placeholder="e.g. 0"
-                      required
-                      onChange={handleAmount}
-                      value={amount}
-                    />
-                  </Field>
-                </Box>
               </Flex>
-              <Flex>
-                <Box>
-                  <Button type="submit" disabled={!validated}>
-                    Submit
-                  </Button>
-                </Box>
-              </Flex>
-            </Flex>
+            )}
           </Card>
         </Form>
 
         <Card my={4}>
           <Heading as={"h4"}>Form values</Heading>
-          <Text>Source Type: {sourceType}</Text>
-          <Text>
-            Quantitative Threshold: {quantitativeThreshold.toString()}
-          </Text>
-          <Text>Categorical Value: {categoricalValue.toString()}</Text>
-          <Text>Action: {action.toString()}</Text>
-          <Text>Valid form: {validated.toString()}</Text>
+          <Text>Company Name is {companyName}</Text>
+          <Text>Preferred Currency is {currency}</Text>
+          <Text>Bill every {frequency} seconds</Text>
+          <Text>Bill by {billingType}</Text>
+          <Text>Usage data is at {endpoint.toString()}</Text>
+          {billingType === "usage" && <Text>Overage Threshold: {overageThreshold.toString()}</Text>}
+          <Text>Form is valid: {validated.toString()}</Text>
           <Checkbox
             label="Toggle Form Validation"
             value={formValidated}
