@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/AnyRate/AnyRate.git",
-  "author": "Sam Hodak <slhodak@gmail.com>",
+  "author": "Sam Hodak <slhodak@gmail.com>, Janson M",
   "license": "MIT",
   "scripts": {
     "build": "waffle waffle.json"
@@ -11,7 +11,14 @@
   "devDependencies": {
     "@chainlink/contracts": "^0.1.6",
     "@openzeppelin/contracts": "3.3.0",
-    "ethereum-waffle": "3.3.0",
+    "ethereum-waffle": "^3.3.0",
     "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "chai": "^4.3.4",
+    "ethers": "^5.1.0",
+    "hardhat": "^2.1.2"
   }
 }

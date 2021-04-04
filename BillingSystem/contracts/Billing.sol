@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.6.6;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import './Treasury.sol';
+import "hardhat/console.sol";
 
 contract Billing is Ownable {
   address payable clientTreasury;
@@ -10,11 +12,11 @@ contract Billing is Ownable {
   uint64 public anyRateFee; // between 0.00 and 1.00 in regular decimal
   uint64 public costPerUnit; // greater than 0
 
-  mapping(bytes32 => uint256) public accountBalances; // Tracks who deposited how much value
+  mapping(string => uint256) public accountBalances; // Tracks who deposited how much value
 
-  event Deposit(address from, bytes32 to, uint256 value);
-  event Transfer(bytes32 from, address to, uint256 value);
-  event InsufficientFunds(bytes32 account, uint256 funds);
+  event Deposit(address from, string to, uint256 value);
+  event Transfer(string from, address to, uint256 value);
+  event InsufficientFunds(string account, uint256 funds);
 
   constructor(address payable _clientTreasury, address payable _anyRateTreasury, uint64 _anyRateFee) public {
     clientTreasury = _clientTreasury;
@@ -31,7 +33,7 @@ contract Billing is Ownable {
   }
 
   // public or external?
-  function usageCallback(bytes32[] memory accounts, uint64[] memory usages) public {
+  function usageCallback(string[] memory accounts, uint64[] memory usages) public {
     // iterate over accountUsage and bill each one
     // iterate over accountUsage while deducting from each account, but send payouts in 2 large transactions
       // risk of this? what if aborted? revert safe?
@@ -63,7 +65,7 @@ contract Billing is Ownable {
   // User Accounts
 
   // Send value to this contract on behalf of an account
-  function depositTo(bytes32 account) public payable {
+  function depositTo(string memory account) public payable {
     accountBalances[account] += msg.value;
     emit Deposit(msg.sender, account, msg.value);
   }
@@ -82,7 +84,7 @@ contract Billing is Ownable {
   }
 
   // Pay treasuries specified amounts
-  function bill(bytes32 account, uint128 payment, uint256 fee) public {
+  function bill(string memory account, uint128 payment, uint256 fee) public {
     // require(msg.sender == address(this), 'Only the billing contract may bill users');
     if(accountBalances[account] < (payment + fee)) {
       emit InsufficientFunds(account, accountBalances[account]);
