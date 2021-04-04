@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/AnyRate/AnyRate.git",
-  "author": "Sam Hodak <slhodak@gmail.com>",
+  "author": "Sam Hodak <slhodak@gmail.com>, Janson M",
   "license": "MIT",
   "scripts": {
     "build": "waffle waffle.json"
