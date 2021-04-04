@@ -24,6 +24,8 @@ contract Billing is Ownable {
     anyRateFee = _anyRateFee;
   }
 
+  receive() external payable {}
+
   // chainlink method gets data from oracle contract
   // calls back a method that will bill users
   // provides usage per user for <time period>
@@ -34,9 +36,7 @@ contract Billing is Ownable {
 
   // public or external?
   function usageCallback(string[] memory accounts, uint64[] memory usages) public {
-    // iterate over accountUsage and bill each one
     // iterate over accountUsage while deducting from each account, but send payouts in 2 large transactions
-      // risk of this? what if aborted? revert safe?
   }
 
   /////

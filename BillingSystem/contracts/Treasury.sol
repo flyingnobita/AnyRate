@@ -11,6 +11,9 @@ contract Treasury is Ownable {
     name = _name;
     console.log("Deploying a Treasury named:", name);
   }
+
+  receive() external payable {}
+
   // Withdraw some value
   function transferTo(address payable to, uint256 value) public {
     require(msg.sender == this.owner(), 'Only the treasury owner can call this function');
