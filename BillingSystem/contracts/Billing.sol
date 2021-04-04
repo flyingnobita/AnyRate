@@ -9,8 +9,8 @@ import "hardhat/console.sol";
 contract Billing is Ownable {
   address payable clientTreasury;
   address payable anyRateTreasury;
-  uint64 public anyRateFee; // between 0.00 and 1.00 in regular decimal
-  uint64 public costPerUnit; // greater than 0
+  uint64 public anyRateFee; // Reciprocal of rate expressed as a decimal -- this float math must be done off-chain
+  uint64 public costPerUnit; // Same format as anyRateFee
 
   mapping(string => uint256) public accountBalances; // Tracks who deposited how much value
 
@@ -76,7 +76,7 @@ contract Billing is Ownable {
   // Figure out how much is owed each party
   function calculatePayment(uint64 usage) internal view
   returns (uint128 payment) {
-    payment = usage * costPerUnit;
+    payment = usage / costPerUnit;
   }
   function calculateFee(uint128 payment) internal view
   returns (uint256 fee) {
