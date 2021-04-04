@@ -9,13 +9,13 @@ import "hardhat/console.sol";
 contract Billing is Ownable {
   address payable clientTreasury;
   address payable anyRateTreasury;
-  uint64 public anyRateFee; // Reciprocal of rate expressed as a decimal -- this float math must be done off-chain
-  uint64 public costPerUnit; // Same format as anyRateFee
+  uint256 public anyRateFee; // Reciprocal of rate expressed as a decimal -- this float math must be done off-chain
+  uint256 public costPerUnit; // Same format as anyRateFee
 
   mapping(string => uint256) public accountBalances; // Tracks who deposited how much value
 
   event Deposit(address from, string to, uint256 value);
-  event Transfer(string from, address to, uint256 value);
+  event PayBill(string from, address to, uint256 value);
   event InsufficientFunds(string account, uint256 funds);
 
   constructor(address payable _clientTreasury, address payable _anyRateTreasury, uint64 _anyRateFee) public {
@@ -35,7 +35,7 @@ contract Billing is Ownable {
   }
 
   // public or external?
-  function usageCallback(string[] memory accounts, uint64[] memory usages) public {
+  function usageCallback(string[] memory accounts, uint256[] memory usages) public {
     // iterate over accountUsage while deducting from each account, but send payouts in 2 large transactions
   }
 
@@ -43,10 +43,10 @@ contract Billing is Ownable {
   // AnyRate
 
   function setAnyRateTreasury(address payable treasury) public {
-    // how to verify this address is of the correct type?
+    // how to verify this address belongs to a Treasury?
     anyRateTreasury = treasury;
   }
-  function setFee(uint64 _anyRateFee) public {
+  function setFee(uint256 _anyRateFee) public {
     anyRateFee = _anyRateFee;
   }
 
@@ -54,10 +54,10 @@ contract Billing is Ownable {
   // Client Business
 
   function setBusinessTreasury(address payable treasury) public {
-    // how to verify this address is of the correct type?
+    // how to verify this address belongs to a Treasury?
     clientTreasury = treasury;
   }
-  function setCostPerUnit(uint64 _costPerUnit) public {
+  function setCostPerUnit(uint256 _costPerUnit) public {
     costPerUnit = _costPerUnit;
   }
 
@@ -65,7 +65,7 @@ contract Billing is Ownable {
   // User Accounts
 
   // Send value to this contract on behalf of an account
-  function depositTo(string memory account) public payable {
+  function depositTo(string calldata account) external payable {
     accountBalances[account] += msg.value;
     emit Deposit(msg.sender, account, msg.value);
   }
@@ -74,26 +74,26 @@ contract Billing is Ownable {
   // Billing
 
   // Figure out how much is owed each party
-  function calculatePayment(uint64 usage) internal view
-  returns (uint128 payment) {
+  function calculatePayment(uint256 usage) internal view
+  returns (uint256 payment) {
     payment = usage / costPerUnit;
   }
-  function calculateFee(uint128 payment) internal view
+  function calculateFee(uint256 payment) internal view
   returns (uint256 fee) {
     fee = payment / anyRateFee;
   }
 
   // Pay treasuries specified amounts
-  function bill(string memory account, uint128 payment, uint256 fee) public {
+  function bill(string memory account, uint256 payment, uint256 fee) public {
     // require(msg.sender == address(this), 'Only the billing contract may bill users');
     if(accountBalances[account] < (payment + fee)) {
       emit InsufficientFunds(account, accountBalances[account]);
     } else {
       accountBalances[account] -= (payment + fee);
       clientTreasury.transfer(payment);
-      emit Transfer(account, clientTreasury, payment);
+      emit PayBill(account, clientTreasury, payment);
       anyRateTreasury.transfer(fee);
-      emit Transfer(account, anyRateTreasury, fee);
+      emit PayBill(account, anyRateTreasury, fee);
     }
   }
 
