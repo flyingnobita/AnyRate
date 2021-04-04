@@ -18,10 +18,11 @@ contract Billing is Ownable {
   event PayBill(string from, address to, uint256 value);
   event InsufficientFunds(string account, uint256 funds);
 
-  constructor(address payable _clientTreasury, address payable _anyRateTreasury, uint64 _anyRateFee) public {
+  constructor(address payable _clientTreasury, address payable _anyRateTreasury, uint256 _anyRateFee, uint256 _costPerUnit) public {
     clientTreasury = _clientTreasury;
     anyRateTreasury = _anyRateTreasury;
     anyRateFee = _anyRateFee;
+    costPerUnit = _costPerUnit;
   }
 
   receive() external payable {}
@@ -34,9 +35,10 @@ contract Billing is Ownable {
     // Jan to implement this
   }
 
-  // public or external?
   function usageCallback(string[] memory accounts, uint256[] memory usages) public {
+    require(accounts.length == usages.length, "Method must recieve same number of account and usage data points");
     // iterate over accountUsage while deducting from each account, but send payouts in 2 large transactions
+    billAll(accounts, usages);
   }
 
   /////
@@ -84,8 +86,10 @@ contract Billing is Ownable {
   }
 
   // Pay treasuries specified amounts
-  function bill(string memory account, uint256 payment, uint256 fee) public {
+  function bill(string memory account, uint256 usage) public {
     // require(msg.sender == address(this), 'Only the billing contract may bill users');
+    uint256 payment = calculatePayment(usage);
+    uint256 fee = calculateFee(payment);
     if(accountBalances[account] < (payment + fee)) {
       emit InsufficientFunds(account, accountBalances[account]);
     } else {
@@ -98,12 +102,9 @@ contract Billing is Ownable {
   }
 
   // collect from everyone
-  // call this inside the callback from the oracle for cleaner code?
-  // function billAll() public {
-  //   for (uint i = 0; i < accountBalances.length; i++) {
-  //     uint128 payment = this.calculatePayment(usage);
-  //     uint256 fee = this.calculateFee(payment);
-  //     this.bill(accounts[i], payment, fee);
-  //   }
-  // }
+  function billAll(string[] memory accounts, uint256[] memory usages) public {
+    for (uint i = 0; i < accounts.length; i++) {
+      bill(accounts[i], usages[i]);
+    }
+  }
 }
