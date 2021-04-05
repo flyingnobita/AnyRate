@@ -90,11 +90,11 @@ contract Billing is Ownable {
     // require(msg.sender == address(this), 'Only the billing contract may bill users');
     uint256 payment = calculatePayment(usage);
     uint256 fee = calculateFee(payment);
-    if(accountBalances[account] < (payment + fee)) {
+    if(accountBalances[account] < payment) {
       emit InsufficientFunds(account, accountBalances[account]);
     } else {
-      accountBalances[account] -= (payment + fee);
-      clientTreasury.transfer(payment);
+      accountBalances[account] -= payment;
+      clientTreasury.transfer(payment - fee);
       emit PayBill(account, clientTreasury, payment);
       anyRateTreasury.transfer(fee);
       emit PayBill(account, anyRateTreasury, fee);
