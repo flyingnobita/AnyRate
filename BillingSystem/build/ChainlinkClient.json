@@ -1,0 +1,59 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ChainlinkCancelled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ChainlinkFulfilled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ChainlinkRequested",
+      "type": "event"
+    }
+  ],
+  "evm": {
+    "bytecode": {
+      "linkReferences": {},
+      "object": "60806040526001600455348015601457600080fd5b50603f8060226000396000f3fe6080604052600080fdfea26469706673582212202a65213ee0b68586b2174468d7537e8304f9ef4289b2cc6b6f238d6a5057fb6964736f6c63430006060033",
+      "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x1 PUSH1 0x4 SSTORE CALLVALUE DUP1 ISZERO PUSH1 0x14 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x22 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x2A PUSH6 0x213EE0B68586 0xB2 OR DIFFICULTY PUSH9 0xD7537E8304F9EF4289 0xB2 0xCC PUSH12 0x6F238D6A5057FB6964736F6C PUSH4 0x43000606 STOP CALLER ",
+      "sourceMap": "506:8683:1:-:0;;;1163:1;1132:32;;506:8683;5:9:-1;2:2;;;27:1;24;17:12;2:2;506:8683:1;;;;;;;"
+    },
+    "deployedBytecode": {
+      "immutableReferences": {},
+      "linkReferences": {},
+      "object": "6080604052600080fdfea26469706673582212202a65213ee0b68586b2174468d7537e8304f9ef4289b2cc6b6f238d6a5057fb6964736f6c63430006060033",
+      "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x2A PUSH6 0x213EE0B68586 0xB2 OR DIFFICULTY PUSH9 0xD7537E8304F9EF4289 0xB2 0xCC PUSH12 0x6F238D6A5057FB6964736F6C PUSH4 0x43000606 STOP CALLER ",
+      "sourceMap": "506:8683:1:-:0;;;12:1:-1;9;2:12"
+    }
+  },
+  "bytecode": "60806040526001600455348015601457600080fd5b50603f8060226000396000f3fe6080604052600080fdfea26469706673582212202a65213ee0b68586b2174468d7537e8304f9ef4289b2cc6b6f238d6a5057fb6964736f6c63430006060033"
+}

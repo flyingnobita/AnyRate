@@ -25,6 +25,10 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">📀</span>
         Oracle
       </a> */}
+      <NavLink to="/user" activeClassName="hurray" tabIndex={tabIndex}>
+        <span aria-hidden="true">🖲️</span>
+        User
+      </NavLink>
     </StyledMenu>
   );
 };

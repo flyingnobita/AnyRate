@@ -11,6 +11,7 @@ import { GlobalStyles } from "./global";
 import { useOnClickOutside } from "./hooks";
 import AnyRate from "./pages/AnyRate";
 import Landing from "./pages/Landing";
+import User from "./pages/User";
 import { customTheme } from "./theme";
 
 require("dotenv").config();
@@ -44,6 +45,7 @@ function App() {
             <Switch>
               <Route exact path={"/"} component={Landing} />
               <Route exact path={"/oracle"} component={AnyRate} />
+              <Route exact path={"/user"} component={User} />
             </Switch>
           </BaseStyles>
         </ThemeProvider>
