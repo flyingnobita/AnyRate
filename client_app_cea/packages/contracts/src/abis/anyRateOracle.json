@@ -216,17 +216,17 @@
         "type": "bytes32"
       },
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "_usage",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "name": "fulfillUsage",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "nonpayable",
@@ -263,9 +263,9 @@
     "name": "getUsage",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -335,9 +335,9 @@
     "name": "usage",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",

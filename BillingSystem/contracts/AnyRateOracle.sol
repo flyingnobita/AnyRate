@@ -117,7 +117,7 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
             );
         req.add("url", _url);
         req.add("path", _path);
-        req.addInt("times", _times);
+        // req.addInt("times", _times);
         requestId = sendChainlinkRequestTo(_oracle, req, _payment);
     }
 
