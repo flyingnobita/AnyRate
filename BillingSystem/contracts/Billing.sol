@@ -150,7 +150,7 @@ contract Billing is Ownable {
 
     // Send value to this contract on behalf of an account
     function depositTo(string calldata account) external payable {
-        accountBalances[account] += msg.value;
+        accountBalances[account].balance += msg.value;
         emit Deposit(msg.sender, account, msg.value);
     }
 
@@ -175,10 +175,10 @@ contract Billing is Ownable {
         // require(msg.sender == address(this), 'Only the billing contract may bill users');
         uint256 payment = calculatePayment(usage);
         uint256 fee = calculateFee(payment);
-        if (accountBalances[account] < payment) {
-            emit InsufficientFunds(account, accountBalances[account]);
+        if (accountBalances[account].balance < payment) {
+            emit InsufficientFunds(account, accountBalances[account].balance);
         } else {
-            accountBalances[account] -= payment;
+            accountBalances[account].balance -= payment;
             clientTreasury.transfer(payment - fee);
             emit PayBill(account, clientTreasury, payment);
             anyRateTreasury.transfer(fee);
@@ -189,7 +189,7 @@ contract Billing is Ownable {
     // collect from everyone
     function billAll(string[] memory accounts, uint256[] memory usages) public {
         for (uint256 i = 0; i < accounts.length; i++) {
-            bill(accounts[i], usages[i]);
+            callChainlinkUsage(accounts[i]);
         }
     }
 }
