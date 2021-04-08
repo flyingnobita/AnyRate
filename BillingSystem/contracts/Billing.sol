@@ -7,7 +7,7 @@ import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 import "./Treasury.sol";
 import "hardhat/console.sol";
 
-contract Billing is Ownable {
+contract Billing is Ownable, ChainlinkClient {
     address payable clientTreasury;
     address payable anyRateTreasury;
     uint256 public anyRateFee; // Reciprocal of rate expressed as a decimal -- this float math must be done off-chain
@@ -23,7 +23,7 @@ contract Billing is Ownable {
     }
 
     mapping(string => Status) public accountStatuses; // Tracks who deposited how much value
-    mapping(bytes32 => account) public requestIdsAccounts; // Tracks which oracle request is for which account's usage
+    mapping(bytes32 => string) public requestIdsAccounts; // Tracks which oracle request is for which account's usage
 
     event Deposit(address from, string to, uint256 value);
     event PayBill(string from, address to, uint256 value);
@@ -80,14 +80,14 @@ contract Billing is Ownable {
      * be taken into consideration in Factory.
      * @return requestId passed to the callback function
      */
-    function callChainlinkUsage(string account)
-    public onlyOwner
+    function callChainlinkUsage(string memory account)
+    internal onlyOwner
     returns (bytes32 requestId)
     {
-        string since = accountStatuses[account].since;
-        accountStatuses[account].since = now;
+        string memory since = accountStatuses[account].lastUsageCall;
+        accountStatuses[account].lastUsageCall = string(now);
         string memory _url =
-            "https://anyrate-sails-api.herokuapp.com/api/usagecount/" + account + "?since=" + since;
+            abi.encodePacked("https://anyrate-sails-api.herokuapp.com/api/usagecount/", account, "?since=", since);
 
         Chainlink.Request memory req =
             buildChainlinkRequest(
@@ -96,7 +96,7 @@ contract Billing is Ownable {
                 this.usageCallback.selector
             );
         req.add("url", _url);
-        req.add("path", "count");
+        req.add("path", usagePath);
         requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
     }
 
@@ -106,17 +106,12 @@ contract Billing is Ownable {
      * example in AnyRateOracle.sol>fulfillUsage()).
      * Function needs to be adapted depending on the type of usage endpoint used.
      * @param _usage return type depends on URL endpoint
-     * @return
      */
-    function usageCallback(bytes32 _requestId, bytes32 _usage)
+    function usageCallback(bytes32 _requestId, uint256 _usage)
         public
-        recordChainlinkFulfillment(_requestId)
+        // recordChainlinkFulfillment(_requestId)
     {
-        require(
-            accounts.length == usages.length,
-            "Method must recieve same number of account and usage data points"
-        );
-        string account = requestIdsAccounts[_requestId];
+        string memory account = requestIdsAccounts[_requestId];
         // iterate over accountUsage while deducting from each account, but send payouts in 2 large transactions
         bill(account, _usage);
     }
@@ -150,7 +145,7 @@ contract Billing is Ownable {
 
     // Send value to this contract on behalf of an account
     function depositTo(string calldata account) external payable {
-        accountBalances[account].balance += msg.value;
+        accountStatuses[account].balance += msg.value;
         emit Deposit(msg.sender, account, msg.value);
     }
 
@@ -175,10 +170,10 @@ contract Billing is Ownable {
         // require(msg.sender == address(this), 'Only the billing contract may bill users');
         uint256 payment = calculatePayment(usage);
         uint256 fee = calculateFee(payment);
-        if (accountBalances[account].balance < payment) {
-            emit InsufficientFunds(account, accountBalances[account].balance);
+        if (accountStatuses[account].balance < payment) {
+            emit InsufficientFunds(account, accountStatuses[account].balance);
         } else {
-            accountBalances[account].balance -= payment;
+            accountStatuses[account].balance -= payment;
             clientTreasury.transfer(payment - fee);
             emit PayBill(account, clientTreasury, payment);
             anyRateTreasury.transfer(fee);
