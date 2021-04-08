@@ -17,7 +17,13 @@ contract Billing is Ownable {
     uint256 private oracleFees;
     string private usagePath;
 
-    mapping(string => uint256) public accountBalances; // Tracks who deposited how much value
+    struct Status {
+      uint256 balance;
+      string lastUsageCall;
+    }
+
+    mapping(string => Status) public accountStatuses; // Tracks who deposited how much value
+    mapping(bytes32 => account) public requestIdsAccounts; // Tracks which oracle request is for which account's usage
 
     event Deposit(address from, string to, uint256 value);
     event PayBill(string from, address to, uint256 value);
@@ -74,9 +80,14 @@ contract Billing is Ownable {
      * be taken into consideration in Factory.
      * @return requestId passed to the callback function
      */
-    function callChainlinkUsage() public onlyOwner returns (bytes32 requestId) {
+    function callChainlinkUsage(string account)
+    public onlyOwner
+    returns (bytes32 requestId)
+    {
+        string since = accountStatuses[account].since;
+        accountStatuses[account].since = now;
         string memory _url =
-            "https://anyrate-sails-api.herokuapp.com/api/usagecount";
+            "https://anyrate-sails-api.herokuapp.com/api/usagecount/" + account + "?since=" + since;
 
         Chainlink.Request memory req =
             buildChainlinkRequest(
@@ -85,7 +96,7 @@ contract Billing is Ownable {
                 this.usageCallback.selector
             );
         req.add("url", _url);
-        req.add("path", usagePath);
+        req.add("path", "count");
         requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
     }
 
@@ -105,8 +116,9 @@ contract Billing is Ownable {
             accounts.length == usages.length,
             "Method must recieve same number of account and usage data points"
         );
+        string account = requestIdsAccounts[_requestId];
         // iterate over accountUsage while deducting from each account, but send payouts in 2 large transactions
-        billAll(accounts, usages);
+        bill(account, _usage);
     }
 
     /////
