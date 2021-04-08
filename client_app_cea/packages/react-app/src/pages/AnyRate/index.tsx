@@ -13,8 +13,8 @@ let fee: string = (0.1 * 10 ** 18).toString(); // 0.1 Link
 
 async function CallOracleUsage(contract) {
   let url: string =
-    // "https://anyrate-sails-api.herokuapp.com/api/usagecount/user1since20210401";
-    "https://anyrate-sails-api.herokuapp.com/api/usagecount";
+    "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401";
+  // "https://anyrate-sails-api.herokuapp.com/api/usagecount";
   let path: string = "count";
   let times: string = "1";
 
@@ -70,15 +70,15 @@ const AnyRate = () => {
 
   async function GetUsage() {
     chainlinkWithSigner.getUsage().then((data) => {
-      console.log("data: ", ethers.utils.parseBytes32String(data));
+      console.log("Usage: ", ethers.utils.parseBytes32String(data));
       setUsage(ethers.utils.parseBytes32String(data));
     });
   }
 
   async function GetUnitCost() {
     chainlinkWithSigner.getUnitCost().then((data) => {
-      console.log("data: ", data.toString());
-      setUnitCost(data.toString());
+      console.log("Unit Cost: ", ethers.utils.parseBytes32String(data));
+      setUnitCost(ethers.utils.parseBytes32String(data));
     });
   }
 

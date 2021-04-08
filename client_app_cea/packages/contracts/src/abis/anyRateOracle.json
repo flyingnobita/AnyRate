@@ -192,17 +192,17 @@
         "type": "bytes32"
       },
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "_unitCost",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "name": "fulfillUnitCost",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "nonpayable",
@@ -250,9 +250,9 @@
     "name": "getUnitCost",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -322,9 +322,9 @@
     "name": "unitCost",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
