@@ -6,8 +6,8 @@ import { Box, Button, Flex, Input } from "rimble-ui";
 
 let oracleAddress = "0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b";
 let jobId: string = ethers.utils.hexlify(
-  // ethers.utils.toUtf8CodePoints("c7dd72ca14b44f0c9b6cfcd4b7ec0a2c")
-  ethers.utils.toUtf8CodePoints("b7285d4859da4b289c7861db971baf0a")
+  ethers.utils.toUtf8CodePoints("c7dd72ca14b44f0c9b6cfcd4b7ec0a2c") // uint256
+  // ethers.utils.toUtf8CodePoints("b7285d4859da4b289c7861db971baf0a") // bytes32
 );
 let fee: string = (0.1 * 10 ** 18).toString(); // 0.1 Link
 
@@ -70,15 +70,15 @@ const AnyRate = () => {
 
   async function GetUsage() {
     chainlinkWithSigner.getUsage().then((data) => {
-      console.log("Usage: ", ethers.utils.parseBytes32String(data));
-      setUsage(ethers.utils.parseBytes32String(data));
+      console.log("Usage: ", data.toString());
+      setUsage(data.toString());
     });
   }
 
   async function GetUnitCost() {
     chainlinkWithSigner.getUnitCost().then((data) => {
-      console.log("Unit Cost: ", ethers.utils.parseBytes32String(data));
-      setUnitCost(ethers.utils.parseBytes32String(data));
+      console.log("Unit Cost: ", data.toString());
+      setUnitCost(data.toString());
     });
   }
 

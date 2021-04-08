@@ -192,17 +192,17 @@
         "type": "bytes32"
       },
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "_unitCost",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "name": "fulfillUnitCost",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -216,17 +216,17 @@
         "type": "bytes32"
       },
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "_usage",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "name": "fulfillUsage",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -250,9 +250,9 @@
     "name": "getUnitCost",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -263,9 +263,9 @@
     "name": "getUsage",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -322,9 +322,9 @@
     "name": "unitCost",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -335,9 +335,9 @@
     "name": "usage",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

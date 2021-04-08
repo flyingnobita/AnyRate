@@ -18,8 +18,8 @@ import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
  */
 contract AnyRateOracle is ChainlinkClient, Ownable {
     string public name = "AnyRateOracle";
-    bytes32 public usage;
-    bytes32 public unitCost;
+    uint256 public usage;
+    uint256 public unitCost;
 
     /**
      * @notice Deploy the contract with a specified address for the LINK
@@ -35,11 +35,11 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
         }
     }
 
-    function getUsage() public view returns (bytes32) {
+    function getUsage() public view returns (uint256) {
         return usage;
     }
 
-    function getUnitCost() public view returns (bytes32) {
+    function getUnitCost() public view returns (uint256) {
         return unitCost;
     }
 
@@ -80,10 +80,10 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
      * @param _requestId The ID that was generated for the request
      * @param _usage The answer provided by the oracle
      */
-    function fulfillUsage(bytes32 _requestId, bytes32 _usage)
+    function fulfillUsage(bytes32 _requestId, uint256 _usage)
         public
         recordChainlinkFulfillment(_requestId)
-        returns (bytes32)
+        returns (uint256)
     {
         usage = _usage;
         return usage;
@@ -126,10 +126,10 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
      * @param _requestId The ID that was generated for the request
      * @param _unitCost The answer provided by the oracle
      */
-    function fulfillUnitCost(bytes32 _requestId, bytes32 _unitCost)
+    function fulfillUnitCost(bytes32 _requestId, uint256 _unitCost)
         public
         recordChainlinkFulfillment(_requestId)
-        returns (bytes32)
+        returns (uint256)
     {
         unitCost = _unitCost;
         return unitCost;
