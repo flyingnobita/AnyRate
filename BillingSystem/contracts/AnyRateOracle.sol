@@ -18,8 +18,8 @@ import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
  */
 contract AnyRateOracle is ChainlinkClient, Ownable {
     string public name = "AnyRateOracle";
-    uint256 public usage;
-    uint256 public unitCost;
+    bytes32 public usage;
+    bytes32 public unitCost;
 
     /**
      * @notice Deploy the contract with a specified address for the LINK
@@ -35,13 +35,11 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
         }
     }
 
-    function getUsage() public view returns (uint256) {
-        // TODO also return timestamp
+    function getUsage() public view returns (bytes32) {
         return usage;
     }
 
-    function getUnitCost() public view returns (uint256) {
-        // TODO also return timestamp
+    function getUnitCost() public view returns (bytes32) {
         return unitCost;
     }
 
@@ -71,7 +69,7 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
             );
         req.add("url", _url);
         req.add("path", _path);
-        req.addInt("times", _times);
+        // req.addInt("times", _times);
         requestId = sendChainlinkRequestTo(_oracle, req, _payment);
     }
 
@@ -82,10 +80,10 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
      * @param _requestId The ID that was generated for the request
      * @param _usage The answer provided by the oracle
      */
-    function fulfillUsage(bytes32 _requestId, uint256 _usage)
+    function fulfillUsage(bytes32 _requestId, bytes32 _usage)
         public
         recordChainlinkFulfillment(_requestId)
-        returns (uint256)
+        returns (bytes32)
     {
         usage = _usage;
         return usage;
@@ -128,10 +126,10 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
      * @param _requestId The ID that was generated for the request
      * @param _unitCost The answer provided by the oracle
      */
-    function fulfillUnitCost(bytes32 _requestId, uint256 _unitCost)
+    function fulfillUnitCost(bytes32 _requestId, bytes32 _unitCost)
         public
         recordChainlinkFulfillment(_requestId)
-        returns (uint256)
+        returns (bytes32)
     {
         unitCost = _unitCost;
         return unitCost;
