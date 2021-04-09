@@ -31,7 +31,7 @@ describe("Billing", function() {
   
     const accountName = "LeonardoDaVinci";
   
-    expect(await billing.accountBalances(accountName)).to.eq(0);
+    expect((await billing.accountStatuses(accountName)).balance).to.eq(0);
   });
   it("Should receive ether via deposit on behalf of a user account", async function() {
     const Treasury = await ethers.getContractFactory("Treasury");
@@ -44,7 +44,7 @@ describe("Billing", function() {
     const account = (await ethers.getSigners())[0];
     const accountName = "LeonardoDaVinci";
     expect(await account.provider.getBalance(billing.address)).to.eq(0);
-    expect(await billing.accountBalances(accountName)).to.eq(0);
+    expect((await billing.accountStatuses(accountName)).balance).to.eq(0);
 
     const depositAmount = ethers.utils.parseEther('1.0');
     await billing.depositTo(accountName, {
@@ -55,7 +55,7 @@ describe("Billing", function() {
     // Expect deposit to add to Billing contract balance
     expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
     // Expect deposit to add to user's account balance
-    const accountNewBalance = await billing.accountBalances(accountName);
+    const accountNewBalance = (await billing.accountStatuses(accountName)).balance;
     console.log(`Account ${accountName} has balance ${accountNewBalance}`);
     expect(accountNewBalance).to.eq(depositAmount);
   });
@@ -76,7 +76,7 @@ describe("Billing", function() {
       from: account.address,
       value: depositAmount
     });
-    expect(await billing.accountBalances(accountName)).to.eq(depositAmount);
+    expect((await billing.accountStatuses(accountName)).balance).to.eq(depositAmount);
     expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
 
     const usageAmount = ethers.utils.parseEther('1');
@@ -87,7 +87,7 @@ describe("Billing", function() {
     // Expect payment to be deducted from Billing contract balance
     expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount.sub(paymentAmount));
     // Expect payment to be deducted from user account balance
-    expect(await billing.accountBalances(accountName)).to.eq(depositAmount.sub(paymentAmount));
+    expect((await billing.accountStatuses(accountName)).balance).to.eq(depositAmount.sub(paymentAmount));
   });
   it("Should add calculated payment to the business treasury", async function() {
     const Treasury = await ethers.getContractFactory("Treasury");
@@ -106,7 +106,7 @@ describe("Billing", function() {
       from: account.address,
       value: depositAmount
     });
-    expect(await billing.accountBalances(accountName)).to.eq(depositAmount);
+    expect((await billing.accountStatuses(accountName)).balance).to.eq(depositAmount);
     expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
 
     const usageAmount = ethers.utils.parseEther('1');
@@ -137,7 +137,7 @@ describe("Billing", function() {
       from: account.address,
       value: depositAmount
     });
-    expect(await billing.accountBalances(accountName)).to.eq(depositAmount);
+    expect((await billing.accountStatuses(accountName)).balance).to.eq(depositAmount);
     expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
 
     const usageAmount = ethers.utils.parseEther('1');

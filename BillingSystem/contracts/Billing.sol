@@ -80,25 +80,25 @@ contract Billing is Ownable, ChainlinkClient {
      * be taken into consideration in Factory.
      * @return requestId passed to the callback function
      */
-    function callChainlinkUsage(string memory account)
-    internal onlyOwner
-    returns (bytes32 requestId)
-    {
-        string memory since = accountStatuses[account].lastUsageCall;
-        accountStatuses[account].lastUsageCall = string(now);
-        string memory _url =
-            abi.encodePacked("https://anyrate-sails-api.herokuapp.com/api/usagecount/", account, "?since=", since);
+    // function callChainlinkUsage(string memory account)
+    // internal onlyOwner
+    // returns (bytes32 requestId)
+    // {
+    //     string memory since = accountStatuses[account].lastUsageCall;
+    //     accountStatuses[account].lastUsageCall = string(now);
+    //     string memory _url =
+    //         abi.encodePacked("https://anyrate-sails-api.herokuapp.com/api/usagecount/", account, "?since=", since);
 
-        Chainlink.Request memory req =
-            buildChainlinkRequest(
-                jobId,
-                address(this),
-                this.usageCallback.selector
-            );
-        req.add("url", _url);
-        req.add("path", usagePath);
-        requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
-    }
+    //     Chainlink.Request memory req =
+    //         buildChainlinkRequest(
+    //             jobId,
+    //             address(this),
+    //             this.usageCallback.selector
+    //         );
+    //     req.add("url", _url);
+    //     req.add("path", usagePath);
+    //     requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
+    // }
 
     /**
      * @notice Callback function for callChainlinkUsage()
@@ -120,8 +120,8 @@ contract Billing is Ownable, ChainlinkClient {
     // AnyRate
 
     function setAnyRateTreasury(address payable treasury) public {
-        // how to verify this address belongs to a Treasury?
-        anyRateTreasury = treasury;
+          // how to verify this address belongs to a Treasury?
+          anyRateTreasury = treasury;
     }
 
     function setFee(uint256 _anyRateFee) public {
@@ -184,7 +184,7 @@ contract Billing is Ownable, ChainlinkClient {
     // collect from everyone
     function billAll(string[] memory accounts, uint256[] memory usages) public {
         for (uint256 i = 0; i < accounts.length; i++) {
-            callChainlinkUsage(accounts[i]);
+            // callChainlinkUsage(accounts[i]);
         }
     }
 }
