@@ -76,6 +76,13 @@ contract BillingFactory {
       clientBilling.depositTo(account);
   }
 
+  function callAccountBalance(string memory name, string calldata account) external
+  returns (uint256 balance)
+  {
+      Billing clientBilling = Billing(billingContracts[name]);
+      balance = clientBilling.accountBalance(account);
+  }
+
   /////
   // Billing
 

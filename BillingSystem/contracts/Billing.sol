@@ -156,19 +156,25 @@ contract Billing is Ownable, ChainlinkClient {
         emit Deposit(msg.sender, account, msg.value);
     }
 
+    function accountBalance(string calldata account) external
+    returns (uint256 balance)
+    {
+      balance = accountStatuses[account].balance;
+    }
+
     /////
     // Billing
 
     // Figure out how much is owed each party
-    function calculatePayment(uint256 usage)
-        internal
-        view
-        returns (uint256 payment)
+    function calculatePayment(uint256 usage) internal view
+    returns (uint256 payment)
     {
         payment = usage / costPerUnit;
     }
 
-    function calculateFee(uint256 payment) internal view returns (uint256 fee) {
+    function calculateFee(uint256 payment) internal view
+    returns (uint256 fee)
+    {
         fee = payment / anyRateFee;
     }
 
