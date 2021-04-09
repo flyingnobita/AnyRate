@@ -22,14 +22,16 @@ contract BillingFactory {
 
   function createBilling(
     string memory name,
-    uint256 costPerUnit
+    uint256 costPerUnit,
+    string memory usageURL
   ) public {
     Treasury clientTreasury = TreasuryFactory(treasuryFactory).createTreasury(name);
     Billing billing = new Billing(
       payable(address(clientTreasury)),
       anyRateTreasury,
       anyRateFee,
-      costPerUnit
+      costPerUnit,
+      usageURL
     );
     clients.push(name);
     billingContracts[name] = payable(address(billing));

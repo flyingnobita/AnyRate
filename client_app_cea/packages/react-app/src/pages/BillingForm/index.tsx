@@ -18,9 +18,9 @@ import {
 
 const billingFactoryAddress = "";
 
-async function createBilling(contract: ethers.Contract, name: string, costPerUnit: number) {
+async function createBilling(contract: ethers.Contract, name: string, costPerUnit: number, endpoint: string) {
   contract
-    .createBilling(billingFactoryAddress, name, costPerUnit)
+    .createBilling(billingFactoryAddress, name, costPerUnit, endpoint)
     .then(() => {
       console.log(`Created billing contract for ${name} with cost per unit ${costPerUnit}`);
     })

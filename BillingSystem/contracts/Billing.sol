@@ -13,6 +13,7 @@ contract Billing is Ownable, ChainlinkClient {
     uint256 public anyRateFee; // Reciprocal of rate expressed as a decimal -- this float math must be done off-chain
     uint256 public costPerUnit; // Same format as anyRateFee
     address private chainlinkNode;
+    string private usageURL;
     bytes32 private jobId;
     uint256 private oracleFees;
     string private usagePath;
@@ -33,12 +34,14 @@ contract Billing is Ownable, ChainlinkClient {
         address payable _clientTreasury,
         address payable _anyRateTreasury,
         uint256 _anyRateFee,
-        uint256 _costPerUnit
+        uint256 _costPerUnit,
+        string _usageURL
     ) public {
         clientTreasury = _clientTreasury;
         anyRateTreasury = _anyRateTreasury;
         anyRateFee = _anyRateFee;
         costPerUnit = _costPerUnit;
+        usageURL = _usageURL;
 
         chainlinkNode = 0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b;
         jobId = "c7dd72ca14b44f0c9b6cfcd4b7ec0a2c";
@@ -63,6 +66,10 @@ contract Billing is Ownable, ChainlinkClient {
         oracleFees = _oracleFees;
     }
 
+    function setUsageURL(uint256 _usageURL) public {
+        usageURL = _usageURL;
+    }
+
     // chainlink method gets data from oracle contract
     // calls back a method that will bill users
     // provides usage per user for <time period>
@@ -80,25 +87,25 @@ contract Billing is Ownable, ChainlinkClient {
      * be taken into consideration in Factory.
      * @return requestId passed to the callback function
      */
-    // function callChainlinkUsage(string memory account)
-    // internal onlyOwner
-    // returns (bytes32 requestId)
-    // {
-    //     string memory since = accountStatuses[account].lastUsageCall;
-    //     accountStatuses[account].lastUsageCall = string(now);
-    //     string memory _url =
-    //         abi.encodePacked("https://anyrate-sails-api.herokuapp.com/api/usagecount/", account, "?since=", since);
+    function callChainlinkUsage(string memory account)
+    internal onlyOwner
+    returns (bytes32 requestId)
+    {
+        string memory since = accountStatuses[account].lastUsageCall;
+        accountStatuses[account].lastUsageCall = string(now);
+        string memory _url =
+            abi.encodePacked(usageURL, account, "?since=", since);
 
-    //     Chainlink.Request memory req =
-    //         buildChainlinkRequest(
-    //             jobId,
-    //             address(this),
-    //             this.usageCallback.selector
-    //         );
-    //     req.add("url", _url);
-    //     req.add("path", usagePath);
-    //     requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
-    // }
+        Chainlink.Request memory req =
+            buildChainlinkRequest(
+                jobId,
+                address(this),
+                this.usageCallback.selector
+            );
+        req.add("url", _url);
+        req.add("path", usagePath);
+        requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
+    }
 
     /**
      * @notice Callback function for callChainlinkUsage()
