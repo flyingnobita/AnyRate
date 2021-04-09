@@ -51,15 +51,13 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
      * @param _jobId The bytes32 JobID to be executed
      * @param _url The URL to fetch data from
      * @param _path The dot-delimited path to parse of the response
-     * @param _times The number to multiply the result by
      */
     function createRequestForUsage(
         address _oracle,
         bytes32 _jobId,
         uint256 _payment,
         string memory _url,
-        string memory _path,
-        int256 _times
+        string memory _path
     ) public onlyOwner returns (bytes32 requestId) {
         Chainlink.Request memory req =
             buildChainlinkRequest(
@@ -69,7 +67,6 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
             );
         req.add("url", _url);
         req.add("path", _path);
-        // req.addInt("times", _times);
         requestId = sendChainlinkRequestTo(_oracle, req, _payment);
     }
 
@@ -97,15 +94,13 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
      * @param _jobId The bytes32 JobID to be executed
      * @param _url The URL to fetch data from
      * @param _path The dot-delimited path to parse of the response
-     * @param _times The number to multiply the result by
      */
     function createRequestForUnitCost(
         address _oracle,
         bytes32 _jobId,
         uint256 _payment,
         string memory _url,
-        string memory _path,
-        int256 _times
+        string memory _path
     ) public onlyOwner returns (bytes32 requestId) {
         Chainlink.Request memory req =
             buildChainlinkRequest(
@@ -115,7 +110,6 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
             );
         req.add("url", _url);
         req.add("path", _path);
-        // req.addInt("times", _times);
         requestId = sendChainlinkRequestTo(_oracle, req, _payment);
     }
 

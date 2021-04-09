@@ -2,14 +2,13 @@
 pragma solidity ^0.6.6;
 pragma experimental ABIEncoderV2;
 
+import "./Treasury.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
-import "./Treasury.sol";
-import "hardhat/console.sol";
 
 contract Billing is Ownable, ChainlinkClient {
-    address payable clientTreasury;
-    address payable anyRateTreasury;
+    Treasury clientTreasury;
+    Treasury anyRateTreasury;
     uint256 public anyRateFee; // Reciprocal of rate expressed as a decimal -- this float math must be done off-chain
     uint256 public costPerUnit; // Same format as anyRateFee
     address private chainlinkNode;
@@ -19,23 +18,24 @@ contract Billing is Ownable, ChainlinkClient {
     string private usagePath;
 
     struct Status {
+      uint8 exists;
       uint256 balance;
       string lastUsageCall;
     }
 
+    string[] public accounts; // This makes accountStatuses iterable
     mapping(string => Status) public accountStatuses; // Tracks who deposited how much value
-    mapping(bytes32 => string) public requestIdsAccounts; // Tracks which oracle request is for which account's usage
+    mapping(bytes32 => string) public requestIdsAccounts; // Match oracle response with account
 
     event Deposit(address from, string to, uint256 value);
-    event PayBill(string from, address to, uint256 value);
     event InsufficientFunds(string account, uint256 funds);
 
     constructor(
-        address payable _clientTreasury,
-        address payable _anyRateTreasury,
+        Treasury _clientTreasury,
+        Treasury _anyRateTreasury,
         uint256 _anyRateFee,
         uint256 _costPerUnit,
-        string _usageURL
+        string memory _usageURL
     ) public {
         clientTreasury = _clientTreasury;
         anyRateTreasury = _anyRateTreasury;
@@ -66,7 +66,7 @@ contract Billing is Ownable, ChainlinkClient {
         oracleFees = _oracleFees;
     }
 
-    function setUsageURL(uint256 _usageURL) public {
+    function setUsageURL(string memory _usageURL) public {
         usageURL = _usageURL;
     }
 
@@ -83,7 +83,7 @@ contract Billing is Ownable, ChainlinkClient {
      * for External Adapter.
      * I created 2 types of endpoint, see here:
      * https://www.notion.so/Chainlink-5ef99b9117c8414ea5ea3f4d711f3896
-     * Depending on which endpoint to implement, _url can be different per user
+     * Depending on which endpoint to implement, url can be different per user
      * be taken into consideration in Factory.
      * @return requestId passed to the callback function
      */
@@ -92,9 +92,9 @@ contract Billing is Ownable, ChainlinkClient {
     returns (bytes32 requestId)
     {
         string memory since = accountStatuses[account].lastUsageCall;
-        accountStatuses[account].lastUsageCall = string(now);
-        string memory _url =
-            abi.encodePacked(usageURL, account, "?since=", since);
+        accountStatuses[account].lastUsageCall = uintToString(now);
+        string memory url =
+            string(abi.encodePacked(usageURL, account, "?since=", since));
 
         Chainlink.Request memory req =
             buildChainlinkRequest(
@@ -102,7 +102,7 @@ contract Billing is Ownable, ChainlinkClient {
                 address(this),
                 this.usageCallback.selector
             );
-        req.add("url", _url);
+        req.add("url", url);
         req.add("path", usagePath);
         requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
     }
@@ -112,38 +112,38 @@ contract Billing is Ownable, ChainlinkClient {
      * @dev function header updated to be inline with chainlink callback function example (see
      * example in AnyRateOracle.sol>fulfillUsage()).
      * Function needs to be adapted depending on the type of usage endpoint used.
-     * @param _usage return type depends on URL endpoint
+     * @param usage uint256 / number
      */
-    function usageCallback(bytes32 _requestId, uint256 _usage)
+    function usageCallback(bytes32 requestId, uint256 usage)
         public
-        // recordChainlinkFulfillment(_requestId)
+        // recordChainlinkFulfillment(requestId)
     {
-        string memory account = requestIdsAccounts[_requestId];
-        // iterate over accountUsage while deducting from each account, but send payouts in 2 large transactions
-        bill(account, _usage);
+        bill(requestIdsAccounts[requestId], usage);
     }
 
     /////
     // AnyRate
 
-    function setAnyRateTreasury(address payable treasury) public {
-          // how to verify this address belongs to a Treasury?
+    function setAnyRateTreasury(Treasury treasury)
+    public {
           anyRateTreasury = treasury;
     }
 
-    function setFee(uint256 _anyRateFee) public {
+    function setFee(uint256 _anyRateFee)
+    public {
         anyRateFee = _anyRateFee;
     }
 
     /////
     // Client Business
 
-    function setBusinessTreasury(address payable treasury) public {
-        // how to verify this address belongs to a Treasury?
+    function setBusinessTreasury(Treasury treasury)
+    public {
         clientTreasury = treasury;
     }
 
-    function setCostPerUnit(uint256 _costPerUnit) public {
+    function setCostPerUnit(uint256 _costPerUnit)
+    public {
         costPerUnit = _costPerUnit;
     }
 
@@ -151,12 +151,20 @@ contract Billing is Ownable, ChainlinkClient {
     // User Accounts
 
     // Send value to this contract on behalf of an account
-    function depositTo(string calldata account) external payable {
+    function depositTo(string calldata account)
+    external
+    payable {
+        if (accountStatuses[account].exists == 0) {
+            accounts.push(account);
+            accountStatuses[account].exists = 1;
+        }
         accountStatuses[account].balance += msg.value;
         emit Deposit(msg.sender, account, msg.value);
     }
 
-    function accountBalance(string calldata account) external
+    function accountBalance(string calldata account)
+    external
+    view
     returns (uint256 balance)
     {
       balance = accountStatuses[account].balance;
@@ -166,38 +174,67 @@ contract Billing is Ownable, ChainlinkClient {
     // Billing
 
     // Figure out how much is owed each party
-    function calculatePayment(uint256 usage) internal view
-    returns (uint256 payment)
-    {
+    function calculatePayment(uint256 usage)
+    internal
+    view
+    returns (uint256 payment) {
         payment = usage / costPerUnit;
     }
 
-    function calculateFee(uint256 payment) internal view
-    returns (uint256 fee)
-    {
+    function calculateFee(uint256 payment)
+    internal
+    view
+    returns (uint256 fee) {
         fee = payment / anyRateFee;
     }
 
     // Pay treasuries specified amounts
-    function bill(string memory account, uint256 usage) public {
-        // require(msg.sender == address(this), 'Only the billing contract may bill users');
+    function bill(string memory account, uint256 usage)
+    internal {
         uint256 payment = calculatePayment(usage);
-        uint256 fee = calculateFee(payment);
+        uint256 fee = calculatePayment(payment);
         if (accountStatuses[account].balance < payment) {
             emit InsufficientFunds(account, accountStatuses[account].balance);
         } else {
             accountStatuses[account].balance -= payment;
-            clientTreasury.transfer(payment - fee);
-            emit PayBill(account, clientTreasury, payment);
-            anyRateTreasury.transfer(fee);
-            emit PayBill(account, anyRateTreasury, fee);
+            payable(address(clientTreasury)).transfer(payment - fee);
+            payable(address(anyRateTreasury)).transfer(fee);
         }
     }
 
-    // collect from everyone
-    function billAll(string[] memory accounts, uint256[] memory usages) public {
+    // Iterate over accounts while deducting from each
+    // TODO: Send payments and fees from Billing to treasuries in 2 cumulative transactions
+    function billAll()
+    onlyOwner
+    public {
         for (uint256 i = 0; i < accounts.length; i++) {
-            // callChainlinkUsage(accounts[i]);
+            callChainlinkUsage(accounts[i]);
         }
+    }
+
+
+    /////
+    // Utility
+
+    function uintToString(uint value)
+    internal
+    pure
+    returns (string memory _uintAsString) {
+        if (value == 0) {
+          return "0";
+        }
+        uint j = value;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (value != 0) {
+            bstr[k--] = byte(uint8(48 + value % 10));
+            value /= 10;
+        }
+        return string(bstr);
     }
 }

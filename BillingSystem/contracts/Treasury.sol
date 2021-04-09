@@ -2,14 +2,12 @@
 pragma solidity ^0.6.6;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
 contract Treasury is Ownable {
   string public name;
 
   constructor(string memory _name) public {
     name = _name;
-    console.log("Deploying a Treasury named:", name);
   }
 
   receive() external payable {}
