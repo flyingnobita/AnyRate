@@ -77,6 +77,7 @@ contract BillingFactory {
 
   function callAccountBalance(string calldata name, string calldata account)
   external
+  view
   returns (uint256 balance) {
       Billing clientBilling = Billing(billingContracts[name]);
       balance = clientBilling.accountBalance(account);
