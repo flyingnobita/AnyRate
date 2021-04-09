@@ -17,6 +17,10 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">🏠</span>
         Home
       </a> */}
+      <NavLink to="/billingForm" activeClassName="hurray" tabIndex={tabIndex}>
+        <span aria-hidden="true">🏦</span>
+        Billing Form
+      </NavLink>
       <NavLink to="/oracle" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">📀</span>
         Oracle
