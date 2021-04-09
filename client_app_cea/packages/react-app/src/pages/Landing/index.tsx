@@ -35,19 +35,18 @@ const Landing = () => {
 
   /////
   // Connect to Ethereum Wallet
-  const context = useWeb3React();
-  const billingFactory = new ethers.Contract(
-    addresses.billingFactory,
-    abis.billingFactory,
-    context.library
-  );
-  const [signer, setSigner] = useState();
+  // const context = useWeb3React();
+  // const billingFactory = new ethers.Contract(
+  //   addresses.billingFactory,
+  //   abis.billingFactory,
+  //   context.library
+  // );
+  // const [signer, setSigner] = useState();
   /////
 
   const [companyName, setCompanyName] = useState("");
   const [billingType, setBillingType] = useState("time");
   const [endpoint, setEndpoint] = useState("");
-  // const [currency, setCurrency] = useState("BTC");
   const [frequency, setFrequency] = useState(0);
   const [rate, setRate] = useState(0);
   const [overageThreshold, setOverageThreshold] = useState(-1);
@@ -72,11 +71,6 @@ const Landing = () => {
     validateInput(e);
   };
 
-  // const handleCurrency = (e) => {
-  //   setCurrency(e.target.value);
-  //   validateInput(e);
-  // };
-
   const handleFrequency = (e) => {
     setFrequency(e.target.value);
     validateInput(e);
@@ -98,7 +92,6 @@ const Landing = () => {
     if (
       companyName.length > 0 &&
       billingType.length > 0 &&
-      // currency.length > 0 &&
       endpoint.length > 0 &&
       rate > 0 &&
       frequency > 0
@@ -114,7 +107,7 @@ const Landing = () => {
   });
 
   const handleSubmit = (_e) => {
-    createBilling(billingFactory, companyName, rate);
+    // createBilling(billingFactory, companyName, rate);
     console.log("Submitted valid form");
   };
 
@@ -138,20 +131,6 @@ const Landing = () => {
               />
             </Field>
 
-            {/* <Heading as={"h3"}>What currency would you like to be paid in?</Heading>
-            <Field label="Currency">
-              <Select
-                options={[
-                  { value: "ETH", label: "ETH" },
-                  { value: "BTC", label: "BTC" },
-                  { value: "DAI", label: "DAI" }
-                ]}
-                required
-                value={currency}
-                onChange={handleCurrency}
-              />
-            </Field> */}
-
             <Heading as={"h3"}>Do you charge by time or usage?</Heading>
             <Field label="Type">
               <Select
@@ -167,7 +146,7 @@ const Landing = () => {
           
             {/* When billingType is "time", this is not multiplied by usage */}
             <Flex flexDirection="column" alignItems="flex-start">
-              <Heading as={"h3"}>How much {currency} per {billingType === "usage" ? 'unit' : 'pay period' } does your service cost?</Heading>
+              <Heading as={"h3"}>How much ETH per {billingType === "usage" ? 'unit' : 'pay period' } does your service cost?</Heading>
               <Field label="Rate">
                 <Input
                   type="number"
@@ -227,13 +206,14 @@ const Landing = () => {
 
             </Flex>
           )}
-          <Button label="Create Billing Contract" onClick={handleSubmit}></Button>
+          <Button onClick={handleSubmit}>
+            Deploy
+          </Button>
         </Card>
 
         <Card my={4}>
           <Heading as={"h4"}>Form values</Heading>
           <Text>Company Name is {companyName}</Text>
-          {/* <Text>Preferred Currency is {currency}</Text> */}
           <Text>Bill every {frequency} seconds</Text>
           <Text>Bill by {billingType}</Text>
           <Text>Usage data is at {endpoint.toString()}</Text>
