@@ -8,19 +8,20 @@ import "./Treasury";
 contract BillingFactory {
   address public treasuryFactory;
   address payable public anyRateTreasury;
+  uint256 public anyRateFee;
 
   string[] public clients;
   mapping(string => address payable) public billingContracts;
 
-  constructor() {
-    treasuryFactory = new TreasuryFactory();
+  constructor(uint256 _anyRateFee) {
+    anyRateFEe = _anyRateFee;
+    TreasuryFactory treasuryFactory = new TreasuryFactory();
+    Treasury _anyRateTreasury = treasuryFactory.createTreasury("AnyRate");
+    anyRateTreasury = payable(address(_anyRateTreasury));
   }
 
   function createBilling(
     string memory name,
-    address payable clientTreasury,
-    address payable anyRateTreasury,
-    uint256 anyRateFee,
     uint256 costPerUnit
   ) public {
     Treasury clientTreasury = TreasuryFactory(treasuryFactory).createTreasury(name);
@@ -37,7 +38,14 @@ contract BillingFactory {
   /////
   // AnyRate Admin
 
-  function setAnyRateTreasury(address payable treasury) public {
+  // Old fees are "grandfathered" and remain valid by default
+  function setAnyRateFee(uint256 _anyRateFee) public {
+    anyRateFee = _anyRateFee;
+  }
+
+  // Update all Billing contract treasury addresses and change default
+  function setAnyRateTreasury(address payable _treasury) public {
+    anyRateTreasury = _anyRateTreasury;
     for (uint i = 0; i < clients.length; i++) {
       Billing clientBilling = Billing(clients[i]);
       clientBilling.setAnyRateTreasury(payable(address(treasury)));
