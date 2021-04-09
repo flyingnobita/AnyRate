@@ -211,21 +211,7 @@ const Landing = () => {
           </Button>
         </Card>
 
-        <Card my={4}>
-          <Heading as={"h4"}>Form values</Heading>
-          <Text>Company Name is {companyName}</Text>
-          <Text>Bill every {frequency} seconds</Text>
-          <Text>Bill by {billingType}</Text>
-          <Text>Usage data is at {endpoint.toString()}</Text>
-          {billingType === "usage" && <Text>Overage Threshold: {overageThreshold.toString()}</Text>}
-          <Text>Form is valid: {validated.toString()}</Text>
-          <Checkbox
-            label="Toggle Form Validation"
-            value={formValidated}
-            onChange={(e) => setFormValidated(!formValidated)}
-          />
-          <Text>Form validated: {formValidated.toString()}</Text>
-        </Card>
+        <Text>Form validated: {formValidated.toString()}</Text>
       </Box>
     </Flex>
   );
