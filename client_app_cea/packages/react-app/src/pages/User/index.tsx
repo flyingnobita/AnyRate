@@ -1,3 +1,6 @@
+import { abis, addresses } from "@project/contracts";
+import { useWeb3React } from "@web3-react/core";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -7,26 +10,45 @@ import {
   Flex,
   Heading,
   Input,
-  Text,
+  Select
 } from "rimble-ui";
 
-type UserState = {
-  depositAmount: number;
-  withdrawAmount: number;
-  currentUsage: any;
-};
-
-// const web3Context = useWeb3React();
-// const chainlinkContract = new ethers.Contract(
-//   addresses.anyRateOracle,
-//   abis.anyRateOracle,
-//   web3Context.library
-// );
-
 const User = () => {
-  const [depositAmount, setDepositAmount] = useState(0);
-  const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [companyName, setCompanyName] = useState("netflix");
+  const [userName, setUserName] = useState(1);
+  const [depositAmount, setDepositAmount] = useState(2);
+  const [withdrawAmount, setWithdrawAmount] = useState(1);
   const [currentUsage, setCurrentUsage] = useState(0);
+  const [accountBalance, setAccountBalance] = useState(0);
+  const [signer, setSigner] = useState();
+
+  const context = useWeb3React();
+
+  const billingFactoryContract = new ethers.Contract(
+    addresses.billingFactory,
+    abis.billingFactory,
+    context.library
+  );
+
+  const treasuryFactoryContract = new ethers.Contract(
+    addresses.treasuryFactory,
+    abis.treasuryFactory,
+    context.library
+  );
+
+  useEffect(() => {
+    if (context.library) {
+      setSigner(context.library.getSigner(context.account));
+    }
+  }, [context.account, context.library]);
+
+  let BillingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
+    signer
+  );
+
+  let TreasuryFactoryWithSigner: ethers.Contract = treasuryFactoryContract.connect(
+    signer
+  );
 
   useEffect(() => {
     fetch(
@@ -34,10 +56,17 @@ const User = () => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setCurrentUsage(data.count);
       });
   });
+
+  const handleCompanyName = (e) => {
+    setCompanyName(e.target.value);
+  };
+
+  const handleUserName = (e) => {
+    setUserName(e.target.value);
+  };
 
   const changeDeposit = (e) => {
     setDepositAmount(e.target.value);
@@ -47,12 +76,63 @@ const User = () => {
     setWithdrawAmount(e.target.value);
   };
 
-  const submitDeposit = (e) => {
-    console.log("use ethers to deposit");
+  const getAccountBalance = (e) => {
+    BillingFactoryWithSigner.callAccountBalance(companyName, userName).then(
+      (data) => {
+        setAccountBalance(data.toString());
+        console.log("getAccountBalance():", data.toString());
+      }
+    );
   };
 
-  const submitWithdraw = (e) => {
-    console.log("use ethers to withdraw");
+  async function deposit() {
+    console.log("Company Name: ", companyName);
+    console.log("User Name: ", userName);
+    console.log("depositAmount: ", depositAmount);
+
+    const overrides = {
+      value: ethers.utils.parseEther(depositAmount.toString()),
+    };
+
+    let tx = await BillingFactoryWithSigner.callDepositTo(
+      companyName,
+      userName,
+      overrides
+    );
+  }
+
+  async function withdraw() {
+    console.log("Company Name: ", companyName);
+    console.log("User Name: ", userName);
+    console.log("Withdraw Amount: ", withdrawAmount);
+
+    let tx = await BillingFactoryWithSigner.callWithdraw(
+      companyName,
+      userName,
+      withdrawAmount
+    );
+  }
+
+  const createBilling = (e) => {
+    BillingFactoryWithSigner.createBilling(
+      companyName,
+      3,
+      "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
+    ).then((data) => {
+      console.log("createBilling: ", data);
+    });
+  };
+
+  const createTreasury = (e) => {
+    TreasuryFactoryWithSigner.createTreasury(companyName).then((data) => {
+      console.log("createTreasury: ", data);
+    });
+  };
+
+  const handleCallName = (e) => {
+    TreasuryFactoryWithSigner.callName(companyName).then((data) => {
+      console.log(data);
+    });
   };
 
   return (
@@ -70,8 +150,43 @@ const User = () => {
               alignItems="flex-start"
               justifyContent="space-around"
             >
-              <Text>All values in ETH</Text>
-              <Field label="Deposit">
+              <Button onClick={createTreasury}>
+                Treasury Factory createTreasury()
+              </Button>
+
+              <Button onClick={handleCallName}>
+                Treasury Factory handleCallName()
+              </Button>
+
+              <Button onClick={createBilling}>
+                Billing Factory createBilling()
+              </Button>
+
+              <Field label="Company Name">
+                <Select
+                  options={[{ value: "netflix", label: "Netflix" }]}
+                  required
+                  value={companyName}
+                  onChange={handleCompanyName}
+                />
+              </Field>
+              <Field label="User Name">
+                <Input
+                  type="text"
+                  required
+                  disabled
+                  value={userName}
+                  onChange={handleUserName}
+                />
+              </Field>
+              <Field label="Current Usage">
+                <Input type="number" required disabled value={currentUsage} />
+              </Field>
+              <Field label="Account Balance">
+                <Input type="number" required disabled value={accountBalance} />
+              </Field>
+              <Button onClick={getAccountBalance}>Get Account Balance</Button>
+              <Field label="Deposit (ETH)">
                 <Input
                   type="number"
                   required
@@ -80,8 +195,8 @@ const User = () => {
                   onChange={changeDeposit}
                 />
               </Field>
-              <Button onClick={submitDeposit}>Deposit</Button>
-              <Field label="Withdraw">
+              <Button onClick={deposit}>Deposit</Button>
+              <Field label="Withdraw (ETH)">
                 <Input
                   type="number"
                   required
@@ -90,14 +205,7 @@ const User = () => {
                   onChange={changeWithdraw}
                 />
               </Field>
-              <Button onClick={submitWithdraw}>Withdraw</Button>
-            </Flex>
-            <Flex
-              flexDirection="column"
-              alignItems="flex-start"
-              justifyContent="space-around"
-            >
-              <Text>Current usage: {currentUsage}</Text>
+              <Button onClick={withdraw}>Withdraw</Button>
             </Flex>
           </Flex>
         </Card>

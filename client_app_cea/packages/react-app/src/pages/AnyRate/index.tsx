@@ -16,10 +16,9 @@ async function CallOracleUsage(contract) {
     "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401";
   // "https://anyrate-sails-api.herokuapp.com/api/usagecount";
   let path: string = "count";
-  let times: string = "1";
 
   contract
-    .createRequestForUsage(oracleAddress, jobId, fee, url, path, times)
+    .createRequestForUsage(oracleAddress, jobId, fee, url, path)
     .then((requestId) => {
       console.log("requestId / Request Transaction Hash: ", requestId);
     })
@@ -33,10 +32,9 @@ async function CallOracleUsage(contract) {
 async function CallOracleUnitCost(contract) {
   let url: string = "https://anyrate-sails-api.herokuapp.com/api/moviecost";
   let path: string = "unitCost";
-  let times: string = "1";
 
   contract
-    .createRequestForUnitCost(oracleAddress, jobId, fee, url, path, times)
+    .createRequestForUnitCost(oracleAddress, jobId, fee, url, path)
     .then(() => {
       console.log("done");
     })
