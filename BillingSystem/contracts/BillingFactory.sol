@@ -92,6 +92,13 @@ contract BillingFactory {
         balance = clientBilling.accountBalance(account);
     }
 
+    function callWithdraw(string calldata name, string calldata account, uint256 amount)
+        external
+    {
+        Billing clientBilling = Billing(billingContracts[name]);
+        clientBilling.withdraw(account, amount);
+    }
+
     /////
     // Billing
 
