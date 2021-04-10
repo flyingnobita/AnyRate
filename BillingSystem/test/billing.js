@@ -1,15 +1,25 @@
 const { expect } = require("chai");
 
+before(async () => {
+  Billing = await ethers.getContractFactory("Billing");
+  Treasury = await ethers.getContractFactory("Treasury");
+  aTreasury = await Treasury.deploy("AnyRate");
+  bTreasury = await Treasury.deploy("Business");
+  await aTreasury.deployed();
+  await bTreasury.deployed();
+  anyRateFee = 1000; // Expressed as reciprocal of decimal; this is 0.001
+  costPerUnit = 100; // Same as above; this means 0.01
+  usageURL = "corp.com/usage"
+});
+
+beforeEach(async () => {
+  billing = await Billing.deploy(aTreasury.address, bTreasury.address, anyRateFee, costPerUnit, usageURL);
+  [account] = await ethers.getSigners();
+  accountName = "LeonardoDaVinci";
+});
+
 describe("Billing", function() {
   it("Should receive ether", async function() {
-    const Treasury = await ethers.getContractFactory("Treasury");
-    const aTreasury = await Treasury.deploy("AnyRate");
-    const bTreasury = await Treasury.deploy("Business");
-    
-    const Billing = await ethers.getContractFactory("Billing");
-    const billing = await Billing.deploy(aTreasury.address, bTreasury.address, 1000, 100);
-
-    const account = (await ethers.getSigners())[0];
     let initialBillingBalance = await account.provider.getBalance(billing.address);
     expect(initialBillingBalance).to.eq(0);
 
@@ -22,27 +32,10 @@ describe("Billing", function() {
     expect(newBillingBalance).to.eq(sendAmount);
   });
   it("Should have account balances", async function() {
-    const Treasury = await ethers.getContractFactory("Treasury");
-    const aTreasury = await Treasury.deploy("AnyRate");
-    const bTreasury = await Treasury.deploy("Business");
-    
-    const Billing = await ethers.getContractFactory("Billing");
-    const billing = await Billing.deploy(aTreasury.address, bTreasury.address, 1000, 100);
-  
-    const accountName = "LeonardoDaVinci";
   
     expect((await billing.accountStatuses(accountName)).balance).to.eq(0);
   });
   it("Should receive ether via deposit on behalf of a user account", async function() {
-    const Treasury = await ethers.getContractFactory("Treasury");
-    const aTreasury = await Treasury.deploy("AnyRate");
-    const bTreasury = await Treasury.deploy("Business");
-    
-    const Billing = await ethers.getContractFactory("Billing");
-    const billing = await Billing.deploy(aTreasury.address, bTreasury.address, 1000, 100);
-
-    const account = (await ethers.getSigners())[0];
-    const accountName = "LeonardoDaVinci";
     expect(await account.provider.getBalance(billing.address)).to.eq(0);
     expect((await billing.accountStatuses(accountName)).balance).to.eq(0);
 
@@ -60,13 +53,6 @@ describe("Billing", function() {
     expect(accountNewBalance).to.eq(depositAmount);
   });
   it("Should deduct ether on behalf of a user account when billing", async function() {
-    const Treasury = await ethers.getContractFactory("Treasury");
-    const aTreasury = await Treasury.deploy("AnyRate");
-    const bTreasury = await Treasury.deploy("Business");
-    
-    const Billing = await ethers.getContractFactory("Billing");
-    const anyRateFee = 1000; // Expressed as reciprocal of decimal; this is 0.001
-    const costPerUnit = 100; // Same as above; this means 0.01
     const billing = await Billing.deploy(bTreasury.address, aTreasury.address, anyRateFee, costPerUnit);
 
     const account = (await ethers.getSigners())[0];
@@ -90,17 +76,6 @@ describe("Billing", function() {
     expect((await billing.accountStatuses(accountName)).balance).to.eq(depositAmount.sub(paymentAmount));
   });
   it("Should add calculated payment to the business treasury", async function() {
-    const Treasury = await ethers.getContractFactory("Treasury");
-    const aTreasury = await Treasury.deploy("AnyRate");
-    const bTreasury = await Treasury.deploy("Business");
-    
-    const Billing = await ethers.getContractFactory("Billing");
-    const anyRateFee = 1000; // Expressed as reciprocal of decimal; this is 0.001
-    const costPerUnit = 100; // Same as above; this means 0.01
-    const billing = await Billing.deploy(bTreasury.address, aTreasury.address, anyRateFee, costPerUnit);
-
-    const account = (await ethers.getSigners())[0];
-    const accountName = "LeonardoDaVinci";
     const depositAmount = ethers.utils.parseEther('1.0');
     await billing.depositTo(accountName, {
       from: account.address,
@@ -121,17 +96,6 @@ describe("Billing", function() {
 
   });
   it("Should add calculated fee to the AnyRate treasury", async function() {
-    const Treasury = await ethers.getContractFactory("Treasury");
-    const aTreasury = await Treasury.deploy("AnyRate");
-    const bTreasury = await Treasury.deploy("Business");
-    
-    const Billing = await ethers.getContractFactory("Billing");
-    const anyRateFee = 1000; // Expressed as reciprocal of decimal; this is 0.001
-    const costPerUnit = 100; // Same as above; this means 0.01
-    const billing = await Billing.deploy(bTreasury.address, aTreasury.address, anyRateFee, costPerUnit);
-
-    const account = (await ethers.getSigners())[0];
-    const accountName = "LeonardoDaVinci";
     const depositAmount = ethers.utils.parseEther('1.0');
     await billing.depositTo(accountName, {
       from: account.address,
@@ -150,15 +114,6 @@ describe("Billing", function() {
     expect(await account.provider.getBalance(aTreasury.address)).to.eq(feeAmount);
   });
   it("Should bill all users in accounts and usages arrays", async function() {
-    const Treasury = await ethers.getContractFactory("Treasury");
-    const aTreasury = await Treasury.deploy("AnyRate");
-    const bTreasury = await Treasury.deploy("Business");
-    
-    const Billing = await ethers.getContractFactory("Billing");
-    const anyRateFee = 1000; // Expressed as reciprocal of decimal; this is 0.001
-    const costPerUnit = 100; // Same as above; this means 0.01
-    const billing = await Billing.deploy(bTreasury.address, aTreasury.address, anyRateFee, costPerUnit);
-    
     const depositAmount = ethers.utils.parseEther('1.0');
     const accounts = await ethers.getSigners();
 
