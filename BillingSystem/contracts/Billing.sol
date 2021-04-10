@@ -16,14 +16,15 @@ contract Billing is Ownable, ChainlinkClient {
     uint256 private oracleFees;
     string private usagePath;
 
-    struct Status {
+    struct Account {
         uint8 exists;
         uint256 balance;
         string lastUsageCall;
+        address knownAddress;
     }
 
-    string[] public accounts; // This makes accountStatuses iterable
-    mapping(string => Status) public accountStatuses; // Tracks who deposited how much value
+    string[] public accounts; // This makes accountDetails iterable
+    mapping(string => Account) public accountDetails; // Tracks who deposited how much value
     mapping(bytes32 => string) public requestIdsAccounts; // Match oracle response with account
 
     event Deposit(address from, string to, uint256 value);
@@ -91,8 +92,8 @@ contract Billing is Ownable, ChainlinkClient {
         onlyOwner
         returns (bytes32 requestId)
     {
-        string memory since = accountStatuses[account].lastUsageCall;
-        accountStatuses[account].lastUsageCall = uintToString(now);
+        string memory since = accountDetails[account].lastUsageCall;
+        accountDetails[account].lastUsageCall = uintToString(now);
         string memory url =
             string(abi.encodePacked(usageURL, account, "?since=", since));
 
@@ -148,11 +149,12 @@ contract Billing is Ownable, ChainlinkClient {
 
     // Send value to this contract on behalf of an account
     function depositTo(string calldata account) external payable {
-        if (accountStatuses[account].exists == 0) {
+        if (accountDetails[account].exists == 0) {
             accounts.push(account);
-            accountStatuses[account].exists = 1;
+            accountDetails[account].exists = 1;
+            accountDetails[account].knownAddress = msg.sender;
         }
-        accountStatuses[account].balance += msg.value;
+        accountDetails[account].balance += msg.value;
         emit Deposit(msg.sender, account, msg.value);
     }
 
@@ -161,7 +163,19 @@ contract Billing is Ownable, ChainlinkClient {
         view
         returns (uint256 balance)
     {
-        balance = accountStatuses[account].balance;
+        balance = accountDetails[account].balance;
+    }
+
+    // Todo: Update known address or let knownAddresses be an array
+
+    function withdraw(string calldata account, uint256 amount)
+    onlyOwner
+    external
+    {
+      require(accountDetails[account].balance > amount, 'This account does not have enough to withdraw');
+      require(accountDetails[account].knownAddress == msg.sender, 'This account may not belong to the requester');
+      accountDetails[account].balance -= amount;
+      msg.sender.transfer(amount);
     }
 
     /////
@@ -184,10 +198,10 @@ contract Billing is Ownable, ChainlinkClient {
     function bill(string memory account, uint256 usage) internal {
         uint256 payment = calculatePayment(usage);
         uint256 fee = calculatePayment(payment);
-        if (accountStatuses[account].balance < payment) {
-            emit InsufficientFunds(account, accountStatuses[account].balance);
+        if (accountDetails[account].balance < payment) {
+            emit InsufficientFunds(account, accountDetails[account].balance);
         } else {
-            accountStatuses[account].balance -= payment;
+            accountDetails[account].balance -= payment;
             payable(address(clientTreasury)).transfer(payment - fee);
             payable(address(anyRateTreasury)).transfer(fee);
         }
