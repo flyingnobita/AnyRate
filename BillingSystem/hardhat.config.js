@@ -1,7 +1,7 @@
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ethers");
 
 task("accounts", "Prints the list of accounts", async () => {
   const accounts = await ethers.getSigners();

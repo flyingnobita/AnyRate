@@ -1,5 +1,8 @@
 scratch.txt
 
+## Secret stuff
+.env
+
 ## Dependencies
 node_modules/
 
