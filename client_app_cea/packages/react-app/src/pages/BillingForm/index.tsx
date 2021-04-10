@@ -44,7 +44,7 @@ const BillingForm = () => {
   // const [signer, setSigner] = useState();
   /////
 
-  const [companyName, setCompanyName] = useState("");
+  const [companyName, setCompanyName] = useState("netflix");
   const [billingType, setBillingType] = useState("time");
   const [endpoint, setEndpoint] = useState("");
   const [frequency, setFrequency] = useState(0);
