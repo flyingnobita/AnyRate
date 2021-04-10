@@ -10,8 +10,9 @@ import Header from "./components/Header";
 import { GlobalStyles } from "./global";
 import { useOnClickOutside } from "./hooks";
 import AnyRate from "./pages/AnyRate";
-import Landing from "./pages/Landing";
+import BillingForm from "./pages/BillingForm";
 import User from "./pages/User";
+import Landing from "./pages/Landing";
 import { customTheme } from "./theme";
 
 require("dotenv").config();
@@ -44,6 +45,7 @@ function App() {
             </div>
             <Switch>
               <Route exact path={"/"} component={Landing} />
+              <Route exact path={"/BillingForm"} component={BillingForm} />
               <Route exact path={"/oracle"} component={AnyRate} />
               <Route exact path={"/user"} component={User} />
             </Switch>

@@ -6,7 +6,7 @@ describe("Treasury", function() {
     const treasury = await Treasury.deploy("AnyRate");
     await treasury.deployed();
 
-    expect(await treasury.name()).to.equal("AnyRate");
+    expect(await treasury.name()).to.eq("AnyRate");
   });
   it("Should receive ether", async function() {
     const Treasury = await ethers.getContractFactory("Treasury");
@@ -19,6 +19,6 @@ describe("Treasury", function() {
 
     let newTreasuryBalance = await account.provider.getBalance(treasury.address);
 
-    expect(newTreasuryBalance - initialTreasuryBalance === ethers.utils.parseEther('1.0'));
+    expect(newTreasuryBalance.sub(initialTreasuryBalance)).to.eq(ethers.utils.parseEther('1.0'));
   })
 });

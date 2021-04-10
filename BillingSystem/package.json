@@ -6,7 +6,8 @@
   "author": "Sam Hodak <slhodak@gmail.com>, Janson M",
   "license": "MIT",
   "scripts": {
-    "build": "waffle waffle.json"
+    "build": "waffle waffle.json",
+    "export-contracts": "cp build/AnyRateOracle.json ../client_app_cea/packages/contracts/src/abis/ && cp build/Billing.json ../client_app_cea/packages/contracts/src/abis/ && cp build/Treasury.json ../client_app_cea/packages/contracts/src/abis/"
   },
   "devDependencies": {
     "@chainlink/contracts": "^0.1.6",
