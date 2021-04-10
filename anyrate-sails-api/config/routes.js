@@ -19,15 +19,7 @@ module.exports.routes = {
    ***************************************************************************/
 
   "/": { view: "pages/homepage" },
-  "get /api/usercount": "UserController.getCount",
-  "get /api/moviecost": "MovieController.getMovieCost",
-
-  // Not sure how to mock query string, so parameters hardcoded for now
-  "get /api/usagecount/user/1/since/20210401":
-    "UserController.getUsageCountUser1",
-  "get /api/usagecount/user/2/since/20210401":
-    "UserController.getUsageCountUser2",
-  "get /api/usagecount": "UserController.getUsageCount",
+  "GET /api/usage": { action: 'usage' },
 
   /***************************************************************************
    *                                                                          *
