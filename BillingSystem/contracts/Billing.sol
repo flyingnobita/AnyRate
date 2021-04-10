@@ -17,9 +17,9 @@ contract Billing is Ownable, ChainlinkClient {
     string private usagePath;
 
     struct Status {
-      uint8 exists;
-      uint256 balance;
-      string lastUsageCall;
+        uint8 exists;
+        uint256 balance;
+        string lastUsageCall;
     }
 
     string[] public accounts; // This makes accountStatuses iterable
@@ -87,8 +87,9 @@ contract Billing is Ownable, ChainlinkClient {
      * @return requestId passed to the callback function
      */
     function callChainlinkUsage(string memory account)
-    internal onlyOwner
-    returns (bytes32 requestId)
+        internal
+        onlyOwner
+        returns (bytes32 requestId)
     {
         string memory since = accountStatuses[account].lastUsageCall;
         accountStatuses[account].lastUsageCall = uintToString(now);
@@ -115,7 +116,7 @@ contract Billing is Ownable, ChainlinkClient {
      */
     function usageCallback(bytes32 requestId, uint256 usage)
         public
-        // recordChainlinkFulfillment(requestId)
+    // recordChainlinkFulfillment(requestId)
     {
         bill(requestIdsAccounts[requestId], usage);
     }
@@ -123,26 +124,22 @@ contract Billing is Ownable, ChainlinkClient {
     /////
     // AnyRate
 
-    function setAnyRateTreasury(Treasury treasury)
-    public {
-          anyRateTreasury = treasury;
+    function setAnyRateTreasury(Treasury treasury) public {
+        anyRateTreasury = treasury;
     }
 
-    function setFee(uint256 _anyRateFee)
-    public {
+    function setFee(uint256 _anyRateFee) public {
         anyRateFee = _anyRateFee;
     }
 
     /////
     // Client Business
 
-    function setBusinessTreasury(Treasury treasury)
-    public {
+    function setBusinessTreasury(Treasury treasury) public {
         clientTreasury = treasury;
     }
 
-    function setCostPerUnit(uint256 _costPerUnit)
-    public {
+    function setCostPerUnit(uint256 _costPerUnit) public {
         costPerUnit = _costPerUnit;
     }
 
@@ -150,9 +147,7 @@ contract Billing is Ownable, ChainlinkClient {
     // User Accounts
 
     // Send value to this contract on behalf of an account
-    function depositTo(string calldata account)
-    external
-    payable {
+    function depositTo(string calldata account) external payable {
         if (accountStatuses[account].exists == 0) {
             accounts.push(account);
             accountStatuses[account].exists = 1;
@@ -162,11 +157,11 @@ contract Billing is Ownable, ChainlinkClient {
     }
 
     function accountBalance(string calldata account)
-    external
-    view
-    returns (uint256 balance)
+        external
+        view
+        returns (uint256 balance)
     {
-      balance = accountStatuses[account].balance;
+        balance = accountStatuses[account].balance;
     }
 
     /////
@@ -174,22 +169,19 @@ contract Billing is Ownable, ChainlinkClient {
 
     // Figure out how much is owed each party
     function calculatePayment(uint256 usage)
-    internal
-    view
-    returns (uint256 payment) {
+        internal
+        view
+        returns (uint256 payment)
+    {
         payment = usage / costPerUnit;
     }
 
-    function calculateFee(uint256 payment)
-    internal
-    view
-    returns (uint256 fee) {
+    function calculateFee(uint256 payment) internal view returns (uint256 fee) {
         fee = payment / anyRateFee;
     }
 
     // Pay treasuries specified amounts
-    function bill(string memory account, uint256 usage)
-    internal {
+    function bill(string memory account, uint256 usage) internal {
         uint256 payment = calculatePayment(usage);
         uint256 fee = calculatePayment(payment);
         if (accountStatuses[account].balance < payment) {
@@ -203,35 +195,33 @@ contract Billing is Ownable, ChainlinkClient {
 
     // Iterate over accounts while deducting from each
     // TODO: Send payments and fees from Billing to treasuries in 2 cumulative transactions
-    function billAll()
-    onlyOwner
-    public {
+    function billAll() public onlyOwner {
         for (uint256 i = 0; i < accounts.length; i++) {
             callChainlinkUsage(accounts[i]);
         }
     }
 
-
     /////
     // Utility
 
-    function uintToString(uint value)
-    internal
-    pure
-    returns (string memory _uintAsString) {
+    function uintToString(uint256 value)
+        internal
+        pure
+        returns (string memory _uintAsString)
+    {
         if (value == 0) {
-          return "0";
+            return "0";
         }
-        uint j = value;
-        uint len;
+        uint256 j = value;
+        uint256 len;
         while (j != 0) {
             len++;
             j /= 10;
         }
         bytes memory bstr = new bytes(len);
-        uint k = len - 1;
+        uint256 k = len - 1;
         while (value != 0) {
-            bstr[k--] = byte(uint8(48 + value % 10));
+            bstr[k--] = bytes1(uint8(48 + (value % 10)));
             value /= 10;
         }
         return string(bstr);
