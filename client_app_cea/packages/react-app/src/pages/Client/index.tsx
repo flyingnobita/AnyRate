@@ -8,14 +8,12 @@ import {
   Card,
   Field,
   Flex,
-  Form,
   Heading,
   Input,
-  Select,
   Text,
 } from "rimble-ui";
 
-const BillingForm = async () => {
+const ClientBusiness = async () => {
   const [companyName, setCompanyName] = useState("netflix");
   const [transferToAddress, setTransferToAddress] = useState("0x00");
   const [treasuryBalance, setTreasuryBalance] = useState("0");
@@ -44,7 +42,7 @@ const BillingForm = async () => {
   );
   
   useEffect(() => {
-    setTreasuryBalance(treasuryBalance);
+    async () => setTreasuryBalance(await TreasuryFactoryWithSigner.callBalanceOf(companyName));
   });
 
   const handleCompanyName = (e) => {
@@ -55,45 +53,20 @@ const BillingForm = async () => {
     setTransferToAddress(e.target.value);
   };
 
-  const submitTransferTo = () => {
-    transferTo(transferToAddress);
-  };
-
-  const submitWithdrawAll = () => {
-    withdrawAll();
-  };
-
-  async function transferTo(address) {
-    const treasuryFactoryContract = new ethers.Contract(
-      await billingFactoryContract.treasuries[companyName],
-      abis.treasuryFactory,
-      context.library
-    );
-    let TreasuryFactoryWithSigner: ethers.Contract = treasuryFactoryContract.connect(
-      signer
-    ); 
-  
+  const submitTransferTo = async () => {
+    if (!transferToAddress || !companyName) { return }
     let tx = await TreasuryFactoryWithSigner.callDepositTo(
       companyName,
-      address
+      transferToAddress
     );
     console.log(tx);
-  }
+  };
 
-  async function withdrawAll() {
-    const treasuryFactoryContract = new ethers.Contract(
-      await billingFactoryContract.treasuries[companyName],
-      abis.treasuryFactory,
-      context.library
-    );
-    let TreasuryFactoryWithSigner: ethers.Contract = treasuryFactoryContract.connect(
-      signer
-    ); 
-  
+  const submitWithdrawAll = async () => {
+    if (!companyName) { return }
     let tx = await TreasuryFactoryWithSigner.callWithdrawAll(companyName);
     console.log(tx);
-  }
-
+  };
 
   return (
       <Flex alignItems="center" alignContent="center" justifyContent="center">
@@ -141,4 +114,4 @@ const BillingForm = async () => {
   );
 };
 
-export default BillingForm;
+export default ClientBusiness;
