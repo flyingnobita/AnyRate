@@ -5,11 +5,11 @@ See `hardhat.config.json`
 
 ## Compile Contracts for Ethereum
 
-`yarn hardhat compile`
+`yarn compile`
 
 ## Test
 
-`yarn hardhat test`
+`yarn test`
 
 ## Start Hardhat Node
 
@@ -28,5 +28,5 @@ npx hardhat run --network localhost scripts/deploy_BillingFactory.js
 
 ```shell
 #  example
-npx hardhat run scripts/deploy_BillingFactory.js --network kovan
+npx hardhat run --network kovan scripts/deploy_BillingFactory.js
 ```
