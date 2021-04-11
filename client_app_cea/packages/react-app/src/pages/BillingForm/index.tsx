@@ -6,7 +6,6 @@ import {
   Box,
   Button,
   Card,
-  Checkbox,
   Field,
   Flex,
   Form,
@@ -16,40 +15,36 @@ import {
   Text,
 } from "rimble-ui";
 
-const billingFactoryAddress = "";
-
-async function createBilling(contract: ethers.Contract, name: string, costPerUnit: number, endpoint: string) {
-  contract
-    .createBilling(billingFactoryAddress, name, costPerUnit, endpoint)
-    .then(() => {
-      console.log(`Created billing contract for ${name} with cost per unit ${costPerUnit}`);
-    })
-    .catch((error: any) => {
-      window.alert(
-        "Failure!" + (error && error.message ? `\n\n${error.message}` : "")
-      );
-    });
-}
-
 const BillingForm = () => {
-
-  /////
-  // Connect to Ethereum Wallet
-  // const context = useWeb3React();
-  // const billingFactory = new ethers.Contract(
-  //   addresses.billingFactory,
-  //   abis.billingFactory,
-  //   context.library
-  // );
-  // const [signer, setSigner] = useState();
-  /////
-
   const [companyName, setCompanyName] = useState("netflix");
   const [billingType, setBillingType] = useState("time");
-  const [endpoint, setEndpoint] = useState("");
+  const [endpoint, setEndpoint] = useState(
+    "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
+  );
   const [frequency, setFrequency] = useState(0);
-  const [rate, setRate] = useState(0);
+  const [rate, setRate] = useState(2);
   const [overageThreshold, setOverageThreshold] = useState(-1);
+  const [signer, setSigner] = useState();
+  const [validated, setValidated] = useState(false);
+  const [formValidated, setFormValidated] = useState(false);
+
+  const context = useWeb3React();
+
+  useEffect(() => {
+    if (context.library) {
+      setSigner(context.library.getSigner(context.account));
+    }
+  }, [context.account, context.library]);
+
+  const billingFactoryContract = new ethers.Contract(
+    addresses.billingFactory,
+    abis.billingFactory,
+    context.library
+  );
+
+  let BillingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
+    signer
+  );
 
   const handleCompanyName = (e) => {
     setCompanyName(e.target.value);
@@ -61,8 +56,8 @@ const BillingForm = () => {
     validateInput(e);
   };
 
-  const handleEndpoint = (e) => {
-    setEndpoint(e.target.value);
+  const handleRate = (e) => {
+    setRate(e.target.value);
     validateInput(e);
   };
 
@@ -76,13 +71,10 @@ const BillingForm = () => {
     validateInput(e);
   };
 
-  const handleRate = (e) => {
-    setRate(e.target.value);
+  const handleEndpoint = (e) => {
+    setEndpoint(e.target.value);
     validateInput(e);
   };
-
-  const [formValidated, setFormValidated] = useState(false);
-  const [validated, setValidated] = useState(false);
 
   const validateInput = (e) => {
     e.target.parentNode.classList.add("was-validated");
@@ -93,8 +85,8 @@ const BillingForm = () => {
       companyName.length > 0 &&
       billingType.length > 0 &&
       endpoint.length > 0 &&
-      rate > 0 &&
-      frequency > 0
+      rate > 0
+      // frequency > 0
     ) {
       setValidated(true);
     } else {
@@ -106,114 +98,134 @@ const BillingForm = () => {
     validateForm();
   });
 
-  const handleSubmit = (_e) => {
-    // createBilling(billingFactory, companyName, rate);
-    console.log("Submitted valid form");
-  };
+  async function handleSubmit() {
+    console.log("companyName: ", companyName);
+    console.log("rate: ", rate);
+    console.log("endpoint: ", endpoint);
+    const res = await BillingFactoryWithSigner.createBilling(
+      companyName,
+      rate,
+      endpoint
+    );
+    console.log("createBilling: ", res);
+  }
 
   return (
-    <Flex alignItems="center" alignContent="center" justifyContent="center">
-      <Box width={[9 / 10]} maxWidth={800} marginTop={4}>
-        <Card maxWidth={1000}>
-          <Box marginBottom={2}>
-            <Heading as={"h1"}>Billing Contract</Heading>
-          </Box>
+    <Form onSubmit={handleSubmit} validated={formValidated}>
+      <Flex alignItems="center" alignContent="center" justifyContent="center">
+        <Box width={[9 / 10]} maxWidth={800} marginTop={4}>
+          <Card maxWidth={1000}>
+            <Box marginBottom={2}>
+              <Heading as={"h1"}>Billing Contract</Heading>
+            </Box>
 
-          {/* User Usage Data Endpoint */}
-          <Flex flexDirection="column" alignItems="flex-start">
-            <Field label="Company Name">
-              <Input
-                type="text"
-                required
-                placeholder="e.g. Netflix"
-                value={companyName}
-                onChange={handleCompanyName}
-              />
-            </Field>
-
-            <Heading as={"h3"}>Do you charge by time or usage?</Heading>
-            <Field label="Type">
-              <Select
-                options={[
-                  { value: "time", label: "Time" },
-                  { value: "usage", label: "Usage" },
-                ]}
-                required
-                value={billingType}
-                onChange={handleBillingType}
-              />
-            </Field>
-          
-            {/* When billingType is "time", this is not multiplied by usage */}
+            {/* User Usage Data Endpoint */}
             <Flex flexDirection="column" alignItems="flex-start">
-              <Heading as={"h3"}>How much ETH per {billingType === "usage" ? 'unit' : 'pay period' } does your service cost?</Heading>
-              <Field label="Rate">
+              <Field label="Company Name">
                 <Input
-                  type="number"
+                  type="text"
                   required
-                  placeholder="0.001"
-                  step="0.000001"
-                  onChange={handleRate}
-                  value={rate}
+                  placeholder="e.g. Netflix"
+                  value={companyName}
+                  onChange={handleCompanyName}
                 />
               </Field>
 
-            </Flex>
-
-            <Heading as={"h3"}>How often should the customer be charged?</Heading>
-            <Field label="Frequency">
-              <Select
-              // Values in seconds
-                options={[
-                  { value: 60, label: "per minute" },
-                  { value: 3600, label: "hourly" },
-                  { value: 86400, label: "daily" },
-                  { value: 604800, label: "weekly" },
-                  { value: 2635200, label: "monthly" },
-                  { value: 31471200, label: "annually" }
-                ]}
-                required
-                onChange={handleFrequency}
-                value={frequency}
-              />
-            </Field>
-
-            <Heading as={"h3"}>Where will we get the latest usage data?</Heading>
-            <Field label="Endpoint">
-              <Input
-                type="text"
-                required
-                placeholder="e.g. https://my-company.provider.com/usage"
-                onChange={handleEndpoint}
-                value={endpoint}
-              />
-            </Field>
-
-          </Flex>
-
-          {/* Condition */}
-          {billingType === "usage" && (
-            <Flex flexDirection="column" alignItems="flex-start">
-              <Field label="Overage Threshold">
-                <Input
-                  type="number"
+              <Heading as={"h3"}>Do you charge by time or usage?</Heading>
+              <Field label="Type">
+                <Select
+                  options={[
+                    { value: "time", label: "Time" },
+                    // { value: "usage", label: "Usage" },
+                  ]}
                   required
-                  placeholder="e.g. 9000"
-                  onChange={handleOverageThreshold}
-                  value={overageThreshold}
+                  value={billingType}
+                  onChange={handleBillingType}
                 />
               </Field>
 
-            </Flex>
-          )}
-          <Button onClick={handleSubmit}>
-            Deploy
-          </Button>
-        </Card>
+              {/* When billingType is "time", this is not multiplied by usage */}
+              <Flex flexDirection="column" alignItems="flex-start">
+                <Heading as={"h3"}>
+                  How much ETH per{" "}
+                  {billingType === "usage" ? "unit" : "pay period"} does your
+                  service cost?
+                </Heading>
+                <Field label="Rate">
+                  <Input
+                    type="number"
+                    required
+                    placeholder="0.001"
+                    step="0.000001"
+                    onChange={handleRate}
+                    value={rate}
+                  />
+                </Field>
+              </Flex>
 
-        <Text>Form validated: {formValidated.toString()}</Text>
-      </Box>
-    </Flex>
+              {/* <Heading as={"h3"}>
+                How often should the customer be charged?
+              </Heading>
+              <Field label="Frequency">
+                <Select
+                  // Values in seconds
+                  options={[
+                    { value: 60, label: "per minute" },
+                    { value: 3600, label: "hourly" },
+                    { value: 86400, label: "daily" },
+                    { value: 604800, label: "weekly" },
+                    { value: 2635200, label: "monthly" },
+                    { value: 31471200, label: "annually" },
+                  ]}
+                  required
+                  onChange={handleFrequency}
+                  value={frequency}
+                />
+              </Field> */}
+
+              <Heading as={"h3"}>
+                Where will we get the latest usage data?
+              </Heading>
+              <Field label="Endpoint">
+                <Input
+                  type="text"
+                  required
+                  placeholder="e.g. https://my-company.provider.com/usage"
+                  onChange={handleEndpoint}
+                  value={endpoint}
+                />
+              </Field>
+            </Flex>
+
+            {/* Condition */}
+            {/* {billingType === "usage" && (
+              <Flex flexDirection="column" alignItems="flex-start">
+                <Field label="Overage Threshold">
+                  <Input
+                    type="number"
+                    required
+                    placeholder="e.g. 9000"
+                    onChange={handleOverageThreshold}
+                    value={overageThreshold}
+                  />
+                </Field>
+              </Flex>
+            )} */}
+            <Button type="submit" disabled={!validated}>
+              Deploy
+            </Button>
+          </Card>
+
+          {/* <Text>companyName: {companyName}</Text>
+          <Text>billingType: {billingType}</Text>
+          <Text>endpoint: {endpoint}</Text>
+          <Text>rate: {rate}</Text>
+          <Text>frequency: {frequency}</Text>
+          <Text>Valid form: {validated.toString()}</Text>
+          <Text>Form validated: {formValidated.toString()}</Text> */}
+        </Box>
+      </Flex>
+    </Form>
   );
 };
 

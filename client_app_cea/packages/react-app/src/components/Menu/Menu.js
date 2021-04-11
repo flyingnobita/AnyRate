@@ -13,11 +13,7 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">🏠</span>
         Home
       </NavLink>
-      {/* <a href="/" tabIndex={tabIndex}>
-        <span aria-hidden="true">🏠</span>
-        Home
-      </a> */}
-      <NavLink to="/billingForm" activeClassName="hurray" tabIndex={tabIndex}>
+      <NavLink to="/BillingForm" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">🏦</span>
         Billing Form
       </NavLink>
@@ -25,13 +21,13 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">📀</span>
         Oracle
       </NavLink>
-      {/* <a href="/oracle" tabIndex={tabIndex}>
-        <span aria-hidden="true">📀</span>
-        Oracle
-      </a> */}
       <NavLink to="/user" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">🖲️</span>
         User
+      </NavLink>
+      <NavLink to="/AnyRateAdmin" activeClassName="hurray" tabIndex={tabIndex}>
+        <span aria-hidden="true">⚙️</span>
+        Admin
       </NavLink>
     </StyledMenu>
   );
