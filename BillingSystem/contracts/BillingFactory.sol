@@ -19,6 +19,8 @@ contract BillingFactory {
         anyRateTreasury = treasuryFactory.createTreasury("AnyRate");
     }
 
+    receive() external payable {}
+
     function createBilling(
         string memory name,
         uint256 costPerUnit,
