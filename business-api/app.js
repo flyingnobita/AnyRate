@@ -11,10 +11,10 @@ const usageData = {
 
 app.get('/usage', (req, res) => {
   try {
-    const { accountId, since } = req.query;
-    console.log(`Getting usage for ${accountId} since ${since}`);
+    const { account, since } = req.query;
+    console.log(`Getting usage for ${account} since ${since}`);
     // Modulo to stay within the sample data
-    const accountUsage = usageData[accountId];
+    const accountUsage = usageData[account];
     let usageAtSince = accountUsage[since % accountUsage.length];
     let usageNow = accountUsage[accountUsage.length - 1];
     res.send({ count: usageNow - usageAtSince });
