@@ -82,7 +82,7 @@ contract BillingFactory {
         payable
     {
         Billing clientBilling = Billing(billingContracts[name]);
-        clientBilling.depositTo(account);
+        clientBilling.depositTo{value: msg.value}(account);
     }
 
     function callAccountBalance(string calldata name, string calldata account)
