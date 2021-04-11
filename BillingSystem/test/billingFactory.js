@@ -30,16 +30,5 @@ describe("BillingFactory", () => {
     await bf.callDepositTo("corp", "xo", { value: ethers.utils.parseEther("1.0") });
     const [account] = await ethers.getSigners();
     expect((await bf.callAccountBalance("corp", "xo")).toString()).to.equal(ethers.utils.parseEther("1.0").toString());
-  })
-  it("Should allow updating the AnyRate Treasury", async () => {
-    // await bf.setAnyRateTreasury(ethers.utils.getAddress("0x5A0b54D5dc17e0AadC383d2db43D0a0D3E029c4c"));
-    // expect(await bf.anyRateTreasury()).to.eq(ethers.utils.getAddress("0x5A0b54D5dc17e0AadC383d2db43D0a0D3E029c4c"));
-  });
-  it("Should enable updating the client cost per unit", async () => {
-    // await bf.createBilling("corp", 3, "corp.com");
-    // await bf.callSetCostPerUnit("corp", 4);
-    // const clientBillingAddress = await bf.billingContracts("corp");
-    // const clientBilling = new ethers.Contract(BillingABI, clientBillingAddress, ethers.getDefaultProvider());
-    // expect((await clientBilling.costPerUnit()).toNumber()).to.eq(4);
   });
 });
