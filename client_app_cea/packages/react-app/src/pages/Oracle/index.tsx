@@ -45,7 +45,7 @@ async function CallOracleUnitCost(contract) {
     });
 }
 
-const AnyRate = () => {
+const Oracle = () => {
   const context = useWeb3React();
 
   const chainlinkContract = new ethers.Contract(
@@ -150,4 +150,4 @@ const AnyRate = () => {
     </React.Fragment>
   );
 };
-export default AnyRate;
+export default Oracle;

@@ -9,9 +9,10 @@ import { Burger, Menu } from "./components";
 import Header from "./components/Header";
 import { GlobalStyles } from "./global";
 import { useOnClickOutside } from "./hooks";
-import AnyRate from "./pages/AnyRate";
+import Oracle from "./pages/Oracle";
 import BillingForm from "./pages/BillingForm";
 import User from "./pages/User";
+import AnyRateAdmin from "./pages/AnyRateAdmin";
 import Landing from "./pages/Landing";
 import { customTheme } from "./theme";
 
@@ -46,8 +47,9 @@ function App() {
             <Switch>
               <Route exact path={"/"} component={Landing} />
               <Route exact path={"/BillingForm"} component={BillingForm} />
-              <Route exact path={"/oracle"} component={AnyRate} />
+              <Route exact path={"/oracle"} component={Oracle} />
               <Route exact path={"/user"} component={User} />
+              <Route exact path={"/AnyRateAdmin"} component={AnyRateAdmin} />
             </Switch>
           </BaseStyles>
         </ThemeProvider>
