@@ -19,7 +19,7 @@ const BillingForm = () => {
   const [companyName, setCompanyName] = useState("netflix");
   const [billingType, setBillingType] = useState("time");
   const [endpoint, setEndpoint] = useState(
-    "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4"
+    "https://anyrate-client-business-api.herokuapp.com/usage"
   );
   const [frequency, setFrequency] = useState(0);
   const [costPerUnit, setCostPerUnit] = useState(0.01);
@@ -150,7 +150,7 @@ const BillingForm = () => {
                 <Heading as={"h3"}>
                   How much ETH per{" "}
                   {billingType === "usage" ? "unit" : "pay period"} does your
-                  service cost? (rounded to 2DP)
+                  service cost?
                 </Heading>
                 <Field label="Rate">
                   <Input

@@ -15,9 +15,11 @@ import {
 
 const ClientBusiness = () => {
   const [companyName, setCompanyName] = useState("netflix");
-  const [transferToAddress, setTransferToAddress] = useState();
+  const [transferToAddress, setTransferToAddress] = useState("0x0a");
+  const [transferToAmount, setTransferToAmount] = useState(0);
   const [treasuryBalance, setTreasuryBalance] = useState("0");
   const [costPerUnit, setCostPerUnit] = useState(0);
+  const [currentCostPerUnit, setCurrentCostPerUnit] = useState("0");
   const [signer, setSigner] = useState();
   const [treasuryFactoryContract, setTreasuryFactoryContract] = useState<
     ethers.Contract
@@ -42,7 +44,7 @@ const ClientBusiness = () => {
   let BillingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
     signer
   );
-    
+
   async function getTreasuryFactory() {
     let treasuryFactoryAddress = await billingFactoryContract.treasuryFactory();
     console.log("treasuryFactoryAddress: ", treasuryFactoryAddress);
@@ -56,9 +58,18 @@ const ClientBusiness = () => {
     setTreasuryFactoryWithSigner(_treasuryFactoryContract.connect(signer));
   }
 
+  async function getCurrentCostPerUnit() {
+    billingFactoryContract.callGetCostPerUnit(companyName).then((data) => {
+      const dataParsed = ethers.utils.formatEther(data);
+      setCurrentCostPerUnit(dataParsed);
+      console.log("getCurrentCostPerUnit():", dataParsed);
+    });
+  }
+
   useEffect(() => {
     if (billingFactoryContract.provider) {
       getTreasuryFactory();
+      getCurrentCostPerUnit();
     }
   }, [billingFactoryContract.provider, signer]);
 
@@ -81,9 +92,10 @@ const ClientBusiness = () => {
       return;
     }
 
-    let tx = await treasuryFactoryWithSigner.callDepositTo(
+    let tx = await treasuryFactoryWithSigner.callTransferTo(
       companyName,
-      transferToAddress
+      transferToAddress,
+      transferToAmount
     );
     console.log(tx);
   };
@@ -123,6 +135,10 @@ const ClientBusiness = () => {
   const handleCostPerUnit = (e) => {
     setCostPerUnit(e.target.value);
   };
+  
+  const handleTransferToAmount = (e) => {
+    setTransferToAmount(e.target.value);
+  };
 
   return (
     <Flex alignItems="center" alignContent="center" justifyContent="center">
@@ -151,13 +167,22 @@ const ClientBusiness = () => {
           {/* When billingType is "time", this is not multiplied by usage */}
           <Flex marginY={1} alignItems="center">
             <Box>
-              <Field label="Transfer to">
+              <Field label="Transfer to Address">
                 <Input
                   type="text"
                   required
                   placeholder="0x0a"
                   onChange={handleTransferToAddress}
                   value={transferToAddress}
+                />
+              </Field>
+              <Field label="Amount">
+                <Input
+                  type="number"
+                  required
+                  placeholder="e.g. 0.001"
+                  onChange={handleTransferToAmount}
+                  value={transferToAmount}
                 />
               </Field>
             </Box>
@@ -168,6 +193,18 @@ const ClientBusiness = () => {
             </Box>
           </Flex>
 
+          <Flex marginY={1} alignItems="center">
+            <Box>
+              <Field label="Current Cost Per Unit">
+                <Input
+                  type="number"
+                  required
+                  disabled
+                  value={currentCostPerUnit}
+                  />
+              </Field>
+            </Box>
+          </Flex>
           <Flex marginY={1} alignItems="center">
             <Box>
               <Field label="Update Cost Per Unit (in ETH)">
@@ -186,7 +223,6 @@ const ClientBusiness = () => {
               </Button>
             </Box>
           </Flex>
-
           <Flex marginY={1} alignItems="center">
             <Box>
               <Field label="Treasury Balance">
