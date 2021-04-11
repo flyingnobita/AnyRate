@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const port = 4000;
 
 const usageData = {
   // Index is time, value is total usage
@@ -24,6 +23,6 @@ app.get('/usage', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Business API listening on port ${port}`);
+app.listen(process.env.PORT || 4000, () => {
+  console.log(`Business API listening on port ${process.env.PORT}`);
 });

@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "deploy": "cd .. && git subtree push --prefix business-api heroku master"
   },
   "dependencies": {
     "express": "^4.17.1"
