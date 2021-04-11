@@ -19,7 +19,7 @@ const BillingForm = () => {
   const [companyName, setCompanyName] = useState("netflix");
   const [billingType, setBillingType] = useState("time");
   const [endpoint, setEndpoint] = useState(
-    "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
+    "https://anyrate-sails-api.herokuapp.com/api/usage?account=b&since=8"
   );
   const [frequency, setFrequency] = useState(0);
   const [rate, setRate] = useState(2);
@@ -57,7 +57,7 @@ const BillingForm = () => {
   };
 
   const handleRate = (e) => {
-    setRate(e.target.value);
+    setRate(1 / e.target.value);
     validateInput(e);
   };
 
@@ -136,7 +136,7 @@ const BillingForm = () => {
                 <Select
                   options={[
                     { value: "time", label: "Time" },
-                    // { value: "usage", label: "Usage" },
+                    { value: "usage", label: "Usage" },
                   ]}
                   required
                   value={billingType}
