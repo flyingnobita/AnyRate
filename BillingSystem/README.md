@@ -1,7 +1,6 @@
 ## Setup
 
-`yarn install`  
-See `hardhat.config.json`
+`yarn install`
 
 ## Compile Contracts for Ethereum
 
