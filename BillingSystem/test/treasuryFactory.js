@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 
 describe("TreasuryFactory", function() {
-  it("Should be able to create a named treasury", async function() {
+  it("Should be able to create a named treasury", async () => {
     const TreasuryFactory = await ethers.getContractFactory("TreasuryFactory");
     const treasuryFactory = await TreasuryFactory.deploy();
     await treasuryFactory.deployed();
