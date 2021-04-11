@@ -30,4 +30,8 @@ contract TreasuryFactory {
     function callName(string memory name) public view returns (string memory) {
         return treasuries[name].name();
     }
+
+    function balanceOf(string memory name) public view returns (uint256) {
+      return address(treasuries[name]).balance;
+    }
 }
