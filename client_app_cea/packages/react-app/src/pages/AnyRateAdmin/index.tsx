@@ -92,7 +92,7 @@ const AnyRateAdmin = () => {
                     />
                   </Field>
                 </Box>
-                <Box marginX={5}>
+                <Box marginLeft={5}>
                   <Button size="small" onClick={getAnyRateFee}>
                     Get
                   </Button>
@@ -100,7 +100,7 @@ const AnyRateAdmin = () => {
               </Flex>
               <Flex marginY={1} alignItems="center">
                 <Box>
-                  <Field label="New AnyRate Fee (rounded to 2 decimal place)">
+                  <Field label="New AnyRate Fee (rounded to 2 DP)">
                     <Input
                       type="number"
                       required
@@ -110,7 +110,7 @@ const AnyRateAdmin = () => {
                     />
                   </Field>
                 </Box>
-                <Box marginX={5}>
+                <Box marginLeft={5}>
                   <Button size="small" onClick={submitNewAnyRateFee}>
                     Update
                   </Button>
