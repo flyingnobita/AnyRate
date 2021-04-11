@@ -2,9 +2,6 @@ require('dotenv').config();
 const { expect } = require("chai");
 const { TESTNET, INFURA_ID } = process.env;
 const { parseEther } = ethers.utils;
-const getBalance = async (address) => {
-  return await ethers.getDefaultProvider(TESTNET, { infura: INFURA_ID }).getBalance(address);
-};
 
 before(async () => {
   Billing = await ethers.getContractFactory("Billing");
@@ -15,7 +12,7 @@ before(async () => {
   await bTreasury.deployed();
   anyRateFee = 1000; // Expressed as reciprocal of decimal; this is 0.001
   costPerUnit = 100; // Same as above; this means 0.01
-  usageURL = "corp.com/usage"
+  usageURL = "corp.com/usage";
   accountName = "LeonardoDaVinci";
   [account] = await ethers.getSigners();
 });
@@ -26,24 +23,24 @@ beforeEach(async () => {
 
 describe("Billing", () => {
   it("Should receive ether", async () => {
-    let initialBillingBalance = await getBalance(billing.address);
-    console.log("initial account balance: ", await getBalance(account.address));
-    expect(initialBillingBalance._hex).to.eql(parseEther("0")._hex);
+    let initialBillingBalance = await account.provider.getBalance(billing.address);
+    console.log("initial account balance: ", await account.provider.getBalance(account.address));
+    expect(initialBillingBalance).to.eql(parseEther("0"));
 
     const sendAmount = parseEther("1");
     console.log("Sending ether to Billing contract: ", sendAmount);
     await account.sendTransaction({ to: billing.address, value: sendAmount });
 
-    let newBillingBalance = await getBalance(billing.address);
+    let newBillingBalance = await account.provider.getBalance(billing.address);
 
-    expect(newBillingBalance._hex).to.equal(sendAmount._hex);
+    expect(newBillingBalance).to.eql(sendAmount);
   });
   it("Should have account balances", async () => {
     expect((await billing.accountDetails(accountName)).balance).to.eql(parseEther("0"));
   });
   it("Should receive ether via deposit on behalf of a user account", async () => {
-    expect(await getBalance(billing.address)).to.eql(parseEther("0"));
-    expect((await billing.accountDetails(accountName)).balance).to.eql(parseEther("0"));
+    expect(await account.provider.getBalance(billing.address)).to.eq(parseEther("0"));
+    expect((await billing.accountDetails(accountName)).balance).to.eq(parseEther("0"));
 
     const depositAmount = parseEther("1");
     await billing.depositTo(accountName, {
@@ -52,7 +49,7 @@ describe("Billing", () => {
     });
 
     // Expect deposit to add to Billing contract balance
-    expect(await getBalance(billing.address)).to.eq(depositAmount);
+    expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
     // Expect deposit to add to user's account balance
     const accountNewBalance = (await billing.accountDetails(accountName)).balance;
     console.log(`Account ${accountName} has balance ${accountNewBalance}`);
@@ -65,7 +62,7 @@ describe("Billing", () => {
       value: depositAmount
     });
     expect((await billing.accountDetails(accountName)).balance).to.eq(depositAmount);
-    expect(await getBalance(billing.address)).to.eq(depositAmount);
+    expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
 
     const usageAmount = parseEther('1');
     const paymentAmount = usageAmount.div(costPerUnit);
@@ -73,7 +70,7 @@ describe("Billing", () => {
 
     await billing.bill(accountName, usageAmount);
     // Expect payment to be deducted from Billing contract balance
-    expect(await getBalance(billing.address)).to.eq(depositAmount.sub(paymentAmount));
+    expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount.sub(paymentAmount));
     // Expect payment to be deducted from user account balance
     expect((await billing.accountDetails(accountName)).balance).to.eq(depositAmount.sub(paymentAmount));
   });
@@ -84,7 +81,7 @@ describe("Billing", () => {
       value: depositAmount
     });
     expect((await billing.accountDetails(accountName)).balance).to.eq;(depositAmount);
-    expect(await getBalance(billing.address)).to.eql(depositAmount);
+    expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
 
     const usageAmount = parseEther('1');
     const paymentAmount = usageAmount.div(costPerUnit);
@@ -94,7 +91,7 @@ describe("Billing", () => {
 
     await billing.bill(accountName, usageAmount);
     // Expect payment - fee to be added to the business treasury balance
-    expect(await getBalance(bTreasury.address)).to.eql(paymentAmount.sub(feeAmount));
+    expect(await account.provider.getBalance(bTreasury.address)).to.eq(paymentAmount.sub(feeAmount));
 
   });
   it("Should add calculated fee to the AnyRate treasury", async () => {
@@ -103,8 +100,8 @@ describe("Billing", () => {
       from: account.address,
       value: depositAmount
     });
-    expect((await billing.accountDetails(accountName)).balance).to.eql(depositAmount);
-    expect(await getBalance(billing.address)).to.eql(depositAmount);
+    expect((await billing.accountDetails(accountName)).balance).to.eq(depositAmount);
+    expect(await account.provider.getBalance(billing.address)).to.eq(depositAmount);
 
     const usageAmount = parseEther('1');
     const paymentAmount = usageAmount.div(costPerUnit);
@@ -113,6 +110,6 @@ describe("Billing", () => {
 
     await billing.bill(accountName, usageAmount);
     // Expect fee to be added to the AnyRate treasury balance
-    expect(await getBalance(aTreasury.address)).to.eql(feeAmount);
+    expect(await account.provider.getBalance(aTreasury.address)).to.eq(feeAmount);
   });
 });
