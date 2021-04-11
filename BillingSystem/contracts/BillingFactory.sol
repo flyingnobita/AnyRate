@@ -73,6 +73,13 @@ contract BillingFactory {
         billingContracts[name].setCostPerUnit(_costPerUnit);
     }
 
+    function callGetCostPerUnit(string memory name)
+      public
+      returns (uint256)
+    {
+      return billingContracts[name].costPerUnit();
+    }
+
     /////
     // User Accounts
 
