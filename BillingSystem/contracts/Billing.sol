@@ -95,7 +95,7 @@ contract Billing is Ownable, ChainlinkClient {
         string memory since = accountDetails[account].lastUsageCall;
         accountDetails[account].lastUsageCall = uintToString(now);
         string memory url =
-            string(abi.encodePacked(usageURL, account, "?since=", since));
+            string(abi.encodePacked(usageURL, "?account=", account, "&since=", since));
 
         Chainlink.Request memory req =
             buildChainlinkRequest(
