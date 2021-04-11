@@ -24,7 +24,7 @@ contract TreasuryFactory {
     }
 
     function callWithdrawAll(string memory name) public {
-        return treasuries[name].withdrawAll();
+        treasuries[name].withdrawAll();
     }
 
     function callName(string memory name) public view returns (string memory) {
@@ -32,6 +32,6 @@ contract TreasuryFactory {
     }
 
     function balanceOf(string memory name) public view returns (uint256) {
-      return address(treasuries[name]).balance;
+        return address(treasuries[name]).balance;
     }
 }

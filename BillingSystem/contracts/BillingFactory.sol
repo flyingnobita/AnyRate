@@ -6,7 +6,7 @@ import "./TreasuryFactory.sol";
 import "./Treasury.sol";
 
 contract BillingFactory {
-    TreasuryFactory treasuryFactory;
+    TreasuryFactory public treasuryFactory;
     Treasury public anyRateTreasury;
     uint256 public anyRateFee;
 
@@ -74,10 +74,11 @@ contract BillingFactory {
     }
 
     function callGetCostPerUnit(string memory name)
-      public
-      returns (uint256)
+        public
+        view
+        returns (uint256)
     {
-      return billingContracts[name].costPerUnit();
+        return billingContracts[name].costPerUnit();
     }
 
     /////

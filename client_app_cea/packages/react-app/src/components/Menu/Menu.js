@@ -25,6 +25,14 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">🖲️</span>
         User
       </NavLink>
+      <NavLink
+        to="/ClientBusiness"
+        activeClassName="hurray"
+        tabIndex={tabIndex}
+      >
+        <span aria-hidden="true">❤️</span>
+        Business
+      </NavLink>
       <NavLink to="/AnyRateAdmin" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">⚙️</span>
         Admin

@@ -119,7 +119,7 @@ const BillingForm = () => {
         <Box width={[9 / 10]} maxWidth={800} marginTop={4}>
           <Card maxWidth={1000}>
             <Box marginBottom={2}>
-              <Heading as={"h1"}>Billing Contract</Heading>
+              <Heading as={"h1"}>Billing Form</Heading>
             </Box>
 
             {/* User Usage Data Endpoint */}

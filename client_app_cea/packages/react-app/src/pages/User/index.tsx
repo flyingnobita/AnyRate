@@ -22,6 +22,12 @@ const User = () => {
   const [currentUsage, setCurrentUsage] = useState(0);
   const [accountBalance, setAccountBalance] = useState("");
   const [signer, setSigner] = useState();
+  const [treasuryFactoryContract, setTreasuryFactoryContract] = useState<
+    ethers.Contract
+  >();
+  const [treasuryFactoryWithSigner, setTreasuryFactoryWithSigner] = useState<
+    ethers.Contract
+  >();
 
   const context = useWeb3React();
 
@@ -37,23 +43,43 @@ const User = () => {
     context.library
   );
 
-  const treasuryFactoryContract = new ethers.Contract(
-    addresses.treasuryFactory,
-    abis.treasuryFactory,
-    context.library
-  );
-
-  let BillingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
+  let billingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
     signer
   );
 
-  let TreasuryFactoryWithSigner: ethers.Contract = treasuryFactoryContract.connect(
-    signer
-  );
+  async function getTreasuryFactory() {
+    let treasuryFactoryAddress = await billingFactoryContract.treasuryFactory();
+    console.log("treasuryFactoryAddress: ", treasuryFactoryAddress);
+    let _treasuryFactoryContract = new ethers.Contract(
+      treasuryFactoryAddress,
+      abis.treasuryFactory,
+      context.library
+    );
+    setTreasuryFactoryContract(_treasuryFactoryContract);
+    // let _treasuryFactoryWithSigner = _treasuryFactoryContract.connect(signer);
+    // setTreasuryFactoryWithSigner(_treasuryFactoryWithSigner);
+    console.log("signer: ", signer);
+    setTreasuryFactoryWithSigner(_treasuryFactoryContract.connect(signer));
+  }
+
+  useEffect(() => {
+    if (billingFactoryContract.provider) {
+      getTreasuryFactory();
+    }
+  }, [billingFactoryContract.provider, signer]);
+
+  // const treasuryFactoryContract = new ethers.Contract(
+  //   addresses.treasuryFactory,
+  //   abis.treasuryFactory,
+  //   context.library
+  // );
+
+  // let TreasuryFactoryWithSigner: ethers.Contract = treasuryFactoryContract.connect(
+  //   signer
+  // );
 
   useEffect(() => {
     fetch(
-      // "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
       "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4"
     )
       .then((res) => res.json())
@@ -63,6 +89,7 @@ const User = () => {
   });
 
   async function getAccountBalance() {
+    console.log(billingFactoryContract);
     billingFactoryContract
       .callAccountBalance(companyName, userName)
       .then((data) => {
@@ -91,7 +118,7 @@ const User = () => {
       value: ethers.utils.parseEther(depositAmount.toString()),
     };
 
-    let tx = await BillingFactoryWithSigner.callDepositTo(
+    let tx = await billingFactoryWithSigner.callDepositTo(
       companyName,
       userName,
       overrides
@@ -112,7 +139,7 @@ const User = () => {
       withdrawAmount.toString()
     );
 
-    let tx = await BillingFactoryWithSigner.callWithdraw(
+    let tx = await billingFactoryWithSigner.callWithdraw(
       companyName,
       userName,
       withdrawAmountParsed
@@ -121,23 +148,25 @@ const User = () => {
   }
 
   const createBilling = (e) => {
-    BillingFactoryWithSigner.createBilling(
-      companyName,
-      3,
-      "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
-    ).then((data) => {
-      console.log("createBilling: ", data);
-    });
+    billingFactoryWithSigner
+      .createBilling(
+        companyName,
+        3,
+        "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
+      )
+      .then((data) => {
+        console.log("createBilling: ", data);
+      });
   };
 
   const createTreasury = (e) => {
-    TreasuryFactoryWithSigner.createTreasury(companyName).then((data) => {
+    treasuryFactoryWithSigner.createTreasury(companyName).then((data) => {
       console.log("createTreasury: ", data);
     });
   };
 
   const handleCallName = (e) => {
-    TreasuryFactoryWithSigner.callName(companyName).then((data) => {
+    treasuryFactoryWithSigner.callName(companyName).then((data) => {
       console.log(data);
     });
   };
@@ -173,7 +202,7 @@ const User = () => {
               alignItems="flex-start"
               justifyContent="space-around"
             >
-              {/* <Button onClick={createTreasury}>
+              <Button onClick={createTreasury}>
                 Treasury Factory createTreasury()
               </Button>
 
@@ -183,7 +212,7 @@ const User = () => {
 
               <Button onClick={createBilling}>
                 Billing Factory createBilling()
-              </Button> */}
+              </Button>
 
               <Field label="Company Name">
                 <Input

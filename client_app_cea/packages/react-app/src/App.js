@@ -9,11 +9,12 @@ import { Burger, Menu } from "./components";
 import Header from "./components/Header";
 import { GlobalStyles } from "./global";
 import { useOnClickOutside } from "./hooks";
-import Oracle from "./pages/Oracle";
-import BillingForm from "./pages/BillingForm";
-import User from "./pages/User";
 import AnyRateAdmin from "./pages/AnyRateAdmin";
+import BillingForm from "./pages/BillingForm";
+import ClientBusiness from "./pages/ClientBusiness";
 import Landing from "./pages/Landing";
+import Oracle from "./pages/Oracle";
+import User from "./pages/User";
 import { customTheme } from "./theme";
 
 require("dotenv").config();
@@ -50,6 +51,11 @@ function App() {
               <Route exact path={"/oracle"} component={Oracle} />
               <Route exact path={"/user"} component={User} />
               <Route exact path={"/AnyRateAdmin"} component={AnyRateAdmin} />
+              <Route
+                exact
+                path={"/ClientBusiness"}
+                component={ClientBusiness}
+              />
             </Switch>
           </BaseStyles>
         </ThemeProvider>

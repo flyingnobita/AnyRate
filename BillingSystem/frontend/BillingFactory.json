@@ -116,6 +116,25 @@
         "internalType": "string",
         "name": "name",
         "type": "string"
+      }
+    ],
+    "name": "callGetCostPerUnit",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
       },
       {
         "internalType": "address payable",
@@ -235,6 +254,19 @@
     "name": "setAnyRateTreasury",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "treasuryFactory",
+    "outputs": [
+      {
+        "internalType": "contract TreasuryFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
