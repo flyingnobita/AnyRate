@@ -1,12 +1,12 @@
 require('dotenv').config();
 const { expect } = require("chai");
-const { parseEther } = ethers.utils;
+const { parseEther, formatEther } = ethers.utils;
 
 before(async () => {
   Billing = await ethers.getContractFactory("Billing");
   Treasury = await ethers.getContractFactory("Treasury");
   anyRateFee = 1000; // Expressed as reciprocal of decimal; this is 0.001
-  costPerUnit = 100; // Same as above; this means 0.01
+  costPerUnit = parseEther('0.01');
   usageURL = "corp.com/usage";
   accountName = "LeonardoDaVinci";
   [account] = await ethers.getSigners();
@@ -56,8 +56,8 @@ describe("Billing", () => {
       from: account.address,
       value: depositAmount
     });
-    const usageAmount = parseEther('1');
-    const paymentAmount = usageAmount.div(costPerUnit);
+    const usageAmount = parseEther(formatEther('1')); // "1" as BigNumber; 1 wei
+    const paymentAmount = usageAmount.mul(costPerUnit);
     await billing.bill(accountName, usageAmount);
     // Expect payment to be deducted from Billing contract balance
     expect((await account.provider.getBalance(billing.address)).toString()).to.eq(depositAmount.sub(paymentAmount).toString());
@@ -70,8 +70,8 @@ describe("Billing", () => {
       from: account.address,
       value: depositAmount
     });
-    const usageAmount = parseEther('1');
-    const paymentAmount = usageAmount.div(costPerUnit);
+    const usageAmount = parseEther(formatEther('1'));
+    const paymentAmount = usageAmount.mul(costPerUnit);
     const feeAmount = paymentAmount.div(anyRateFee);
 
     await billing.bill(accountName, usageAmount);
@@ -84,8 +84,8 @@ describe("Billing", () => {
       from: account.address,
       value: depositAmount
     });
-    const usageAmount = parseEther('1');
-    const paymentAmount = usageAmount.div(costPerUnit);
+    const usageAmount = parseEther(formatEther('1'));
+    const paymentAmount = usageAmount.mul(costPerUnit);
     const feeAmount = paymentAmount.div(anyRateFee);
     await billing.bill(accountName, usageAmount);
     // Expect fee to be added to the AnyRate treasury balance
