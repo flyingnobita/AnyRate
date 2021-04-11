@@ -13,8 +13,9 @@ let fee: string = (0.1 * 10 ** 18).toString(); // 0.1 Link
 
 async function CallOracleUsage(contract) {
   let url: string =
-    "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401";
-  // "https://anyrate-sails-api.herokuapp.com/api/usagecount";
+    // "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401";
+    // "https://anyrate-sails-api.herokuapp.com/api/usagecount";
+    "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4";
   let path: string = "count";
 
   contract

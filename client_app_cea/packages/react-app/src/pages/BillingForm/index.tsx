@@ -19,10 +19,10 @@ const BillingForm = () => {
   const [companyName, setCompanyName] = useState("netflix");
   const [billingType, setBillingType] = useState("time");
   const [endpoint, setEndpoint] = useState(
-    "https://anyrate-client-business-api.herokuapp.com/usage"
+    "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4"
   );
   const [frequency, setFrequency] = useState(0);
-  const [rate, setRate] = useState(0.001);
+  const [rate, setRate] = useState(0.01);
   const [overageThreshold, setOverageThreshold] = useState(-1);
   const [signer, setSigner] = useState();
   const [validated, setValidated] = useState(false);
@@ -57,7 +57,9 @@ const BillingForm = () => {
   };
 
   const handleRate = (e) => {
-    setRate(e.target.value);
+    let valueFloat = parseFloat(e.target.value);
+    let valueFloatRounded = parseFloat(valueFloat.toFixed(2));
+    setRate(valueFloatRounded);
     validateInput(e);
   };
 
@@ -99,12 +101,13 @@ const BillingForm = () => {
   });
 
   async function handleSubmit() {
+    const rateToSubmit = rate * 100;
     console.log("companyName: ", companyName);
-    console.log("rate: ", rate);
+    console.log("rateToSubmit: ", rateToSubmit);
     console.log("endpoint: ", endpoint);
     const res = await BillingFactoryWithSigner.createBilling(
       companyName,
-      1 / rate,
+      rateToSubmit,
       endpoint
     );
     console.log("createBilling: ", res);
@@ -149,14 +152,13 @@ const BillingForm = () => {
                 <Heading as={"h3"}>
                   How much ETH per{" "}
                   {billingType === "usage" ? "unit" : "pay period"} does your
-                  service cost?
+                  service cost? (rounded to 2DP)
                 </Heading>
                 <Field label="Rate">
                   <Input
                     type="number"
                     required
-                    placeholder="0.001"
-                    step="0.001"
+                    placeholder="e.g. 0.01"
                     onChange={handleRate}
                     value={rate}
                   />
@@ -186,15 +188,18 @@ const BillingForm = () => {
               <Heading as={"h3"}>
                 Where will we get the latest usage data?
               </Heading>
-              <Field label="Endpoint">
-                <Input
-                  type="text"
-                  required
-                  placeholder="e.g. https://my-company.provider.com/usage"
-                  onChange={handleEndpoint}
-                  value={endpoint}
-                />
-              </Field>
+              <Box>
+                <Field label="Endpoint">
+                  <Input
+                    minWidth={700}
+                    type="url"
+                    required
+                    placeholder="e.g. https://my-company.provider.com/usage"
+                    onChange={handleEndpoint}
+                    value={endpoint}
+                  />
+                </Field>
+              </Box>
             </Flex>
 
             {/* Condition */}

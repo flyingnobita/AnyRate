@@ -54,7 +54,7 @@ const AnyRateAdmin = () => {
   async function submitNewAnyRateFee() {
     console.log("newAnyRateFee: ", newAnyRateFee);
 
-    if (newAnyRateFee < 0) {
+    if (newAnyRateFee < 0 || newAnyRateFee > 1) {
       return;
     }
     let newAnyRateFeeToSubmit = newAnyRateFee * 100;
@@ -83,7 +83,7 @@ const AnyRateAdmin = () => {
             >
               <Flex marginY={1} alignItems="center">
                 <Box>
-                  <Field label="Current AnyRate Fee">
+                  <Field label="Current AnyRate Fee (in decimal)">
                     <Input
                       type="number"
                       required
@@ -100,11 +100,11 @@ const AnyRateAdmin = () => {
               </Flex>
               <Flex marginY={1} alignItems="center">
                 <Box>
-                  <Field label="New AnyRate Fee (rounded to 2 DP)">
+                  <Field label="New AnyRate Fee (<= 1, rounded to 2 DP)">
                     <Input
                       type="number"
                       required
-                      placeholder="00"
+                      placeholder="e.g. 0.02"
                       value={newAnyRateFee}
                       onChange={updateNewAnyRateFee}
                     />
