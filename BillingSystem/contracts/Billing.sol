@@ -195,7 +195,7 @@ contract Billing is Ownable, ChainlinkClient {
     }
 
     // Pay treasuries specified amounts
-    function bill(string memory account, uint256 usage) internal {
+    function bill(string memory account, uint256 usage) onlyOwner public {
         uint256 payment = calculatePayment(usage);
         uint256 fee = calculatePayment(payment);
         if (accountDetails[account].balance < payment) {
