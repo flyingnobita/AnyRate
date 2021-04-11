@@ -98,7 +98,8 @@ const BillingForm = () => {
     validateForm();
   });
 
-  async function handleSubmit() {
+  async function handleSubmit(e) {
+    e.preventDefault();
     const weiPerUnit = ethers.utils.parseEther(costPerUnit.toString());
     console.log("companyName: ", companyName);
     console.log("weiPerUnit: ", weiPerUnit);

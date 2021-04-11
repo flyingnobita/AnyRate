@@ -63,7 +63,8 @@ const ClientBusiness = () => {
       const dataParsed = ethers.utils.formatEther(data);
       setCurrentCostPerUnit(dataParsed);
       console.log("getCurrentCostPerUnit():", dataParsed);
-    });
+    })
+    .catch(err => console.error("getCurrentCostPerUnit(): ", err));
   }
 
   useEffect(() => {
@@ -120,7 +121,7 @@ const ClientBusiness = () => {
     console.log("billingFactoryWithSigner: ", BillingFactoryWithSigner);
     console.log("companyName: ", companyName);
     console.log("weiPerUnit: ", weiPerUnit);
-    let tx = await BillingFactoryWithSigner.callSetCostPerUnit(companyName, costPerUnit);
+    let tx = await BillingFactoryWithSigner.callSetCostPerUnit(companyName, weiPerUnit);
     console.log(tx);
   }
   
