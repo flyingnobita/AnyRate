@@ -16,11 +16,11 @@ import {
 
 const User = () => {
   const [companyName, setCompanyName] = useState("netflix");
-  const [userName, setUserName] = useState(1);
+  const [userName, setUserName] = useState("b");
   const [depositAmount, setDepositAmount] = useState(2);
   const [withdrawAmount, setWithdrawAmount] = useState(1);
   const [currentUsage, setCurrentUsage] = useState(0);
-  const [accountBalance, setAccountBalance] = useState(0);
+  const [accountBalance, setAccountBalance] = useState("");
   const [signer, setSigner] = useState();
 
   const context = useWeb3React();
@@ -53,7 +53,8 @@ const User = () => {
 
   useEffect(() => {
     fetch(
-      "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
+      // "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
+      "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4"
     )
       .then((res) => res.json())
       .then((data) => {
@@ -61,30 +62,21 @@ const User = () => {
       });
   });
 
-  const handleCompanyName = (e) => {
-    setCompanyName(e.target.value);
-  };
+  async function getAccountBalance() {
+    billingFactoryContract
+      .callAccountBalance(companyName, userName)
+      .then((data) => {
+        const dataParsed = ethers.utils.formatEther(data);
+        setAccountBalance(dataParsed);
+        console.log("getAccountBalance():", dataParsed);
+      });
+  }
 
-  const handleUserName = (e) => {
-    setUserName(e.target.value);
-  };
-
-  const changeDeposit = (e) => {
-    setDepositAmount(e.target.value);
-  };
-
-  const changeWithdraw = (e) => {
-    setWithdrawAmount(e.target.value);
-  };
-
-  const getAccountBalance = (e) => {
-    BillingFactoryWithSigner.callAccountBalance(companyName, userName).then(
-      (data) => {
-        setAccountBalance(data.toString());
-        console.log("getAccountBalance():", data.toString());
-      }
-    );
-  };
+  useEffect(() => {
+    if (billingFactoryContract.provider) {
+      getAccountBalance();
+    }
+  }, [billingFactoryContract.provider]);
 
   async function deposit() {
     console.log("Company Name: ", companyName);
@@ -116,10 +108,14 @@ const User = () => {
       return;
     }
 
+    const withdrawAmountParsed = ethers.utils.parseEther(
+      withdrawAmount.toString()
+    );
+
     let tx = await BillingFactoryWithSigner.callWithdraw(
       companyName,
       userName,
-      withdrawAmount
+      withdrawAmountParsed
     );
     console.log(tx);
   }
@@ -144,6 +140,22 @@ const User = () => {
     TreasuryFactoryWithSigner.callName(companyName).then((data) => {
       console.log(data);
     });
+  };
+
+  const handleCompanyName = (e) => {
+    setCompanyName(e.target.value);
+  };
+
+  const handleUserName = (e) => {
+    setUserName(e.target.value);
+  };
+
+  const changeDeposit = (e) => {
+    setDepositAmount(e.target.value);
+  };
+
+  const changeWithdraw = (e) => {
+    setWithdrawAmount(e.target.value);
   };
 
   return (
