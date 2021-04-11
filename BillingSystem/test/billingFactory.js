@@ -1,15 +1,9 @@
 // const fs = require("fs");
-const { expect } = require("chai");
+const { expect  } = require("chai");
 require('dotenv').config();
-const { TESTNET, INFURA_ID } = process.env;
-const getBalance = async (address) => {
-  return await ethers.getDefaultProvider(TESTNET, { infura: INFURA_ID }).getBalance(address);
-};
 
 before(async () => {
   BillingFactory = await ethers.getContractFactory("BillingFactory");
-  // const BillingJSON = fs.readFileSync("artifacts/contracts/Billing.sol/Billing.json", "utf-8");
-  // BillingABI = JSON.parse(BillingJSON).abi;
 });
 
 beforeEach(async () => {
@@ -34,13 +28,8 @@ describe("BillingFactory", () => {
     // Sending value with transaction
     // is the value forwarded?
     await bf.callDepositTo("corp", "xo", { value: ethers.utils.parseEther("1.0") });
-    const [account] = ethers.getSigners();
-    await account.sendTransaction({ 
-      to: ccrf.address,
-      value: ethers.utils.parseEther("1.0")
-    });
-    console.log(await getBalance(bf.address));
-    expect((await bf.callAccountBalance("corp", "xo"))).to.eql(ethers.utils.parseEther("1.0"));
+    const [account] = await ethers.getSigners();
+    expect((await bf.callAccountBalance("corp", "xo")).toString()).to.equal(ethers.utils.parseEther("1.0").toString());
   })
   it("Should allow updating the AnyRate Treasury", async () => {
     // await bf.setAnyRateTreasury(ethers.utils.getAddress("0x5A0b54D5dc17e0AadC383d2db43D0a0D3E029c4c"));
