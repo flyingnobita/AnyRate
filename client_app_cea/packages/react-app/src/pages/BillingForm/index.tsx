@@ -22,7 +22,7 @@ const BillingForm = () => {
     "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4"
   );
   const [frequency, setFrequency] = useState(0);
-  const [rate, setRate] = useState(0.01);
+  const [costPerUnit, setCostPerUnit] = useState(0.01);
   const [overageThreshold, setOverageThreshold] = useState(-1);
   const [signer, setSigner] = useState();
   const [validated, setValidated] = useState(false);
@@ -56,10 +56,8 @@ const BillingForm = () => {
     validateInput(e);
   };
 
-  const handleRate = (e) => {
-    let valueFloat = parseFloat(e.target.value);
-    let valueFloatRounded = parseFloat(valueFloat.toFixed(2));
-    setRate(valueFloatRounded);
+  const handleCostPerUnit = (e) => {
+    setCostPerUnit(e.target.value);
     validateInput(e);
   };
 
@@ -87,7 +85,7 @@ const BillingForm = () => {
       companyName.length > 0 &&
       billingType.length > 0 &&
       endpoint.length > 0 &&
-      rate > 0
+      costPerUnit > 0
       // frequency > 0
     ) {
       setValidated(true);
@@ -101,13 +99,13 @@ const BillingForm = () => {
   });
 
   async function handleSubmit() {
-    const rateToSubmit = rate * 100;
+    const weiPerUnit = ethers.utils.parseEther(costPerUnit.toString());
     console.log("companyName: ", companyName);
-    console.log("rateToSubmit: ", rateToSubmit);
+    console.log("weiPerUnit: ", weiPerUnit);
     console.log("endpoint: ", endpoint);
     const res = await BillingFactoryWithSigner.createBilling(
       companyName,
-      rateToSubmit,
+      weiPerUnit,
       endpoint
     );
     console.log("createBilling: ", res);
@@ -159,8 +157,8 @@ const BillingForm = () => {
                     type="number"
                     required
                     placeholder="e.g. 0.01"
-                    onChange={handleRate}
-                    value={rate}
+                    onChange={handleCostPerUnit}
+                    value={costPerUnit}
                   />
                 </Field>
               </Flex>

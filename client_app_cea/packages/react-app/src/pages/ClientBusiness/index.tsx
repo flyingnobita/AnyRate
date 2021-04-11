@@ -17,6 +17,7 @@ const ClientBusiness = () => {
   const [companyName, setCompanyName] = useState("netflix");
   const [transferToAddress, setTransferToAddress] = useState();
   const [treasuryBalance, setTreasuryBalance] = useState("0");
+  const [costPerUnit, setCostPerUnit] = useState(0);
   const [signer, setSigner] = useState();
   const [treasuryFactoryContract, setTreasuryFactoryContract] = useState<
     ethers.Contract
@@ -24,21 +25,24 @@ const ClientBusiness = () => {
   const [treasuryFactoryWithSigner, setTreasuryFactoryWithSigner] = useState<
     ethers.Contract
   >();
-
+  
   const context = useWeb3React();
-
+  
   useEffect(() => {
     if (context.library) {
       setSigner(context.library.getSigner(context.account));
     }
   }, [context.account, context.library]);
-
+  
   const billingFactoryContract = new ethers.Contract(
     addresses.billingFactory,
     abis.billingFactory,
     context.library
   );
-
+  let BillingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
+    signer
+  );
+    
   async function getTreasuryFactory() {
     let treasuryFactoryAddress = await billingFactoryContract.treasuryFactory();
     console.log("treasuryFactoryAddress: ", treasuryFactoryAddress);
@@ -95,12 +99,29 @@ const ClientBusiness = () => {
     console.log(tx);
   }
 
+  async function submitCostPerUnit() {
+    if (!companyName) {
+      return;
+    }
+
+    const weiPerUnit = ethers.utils.parseEther(costPerUnit.toString());
+    console.log("billingFactoryWithSigner: ", BillingFactoryWithSigner);
+    console.log("companyName: ", companyName);
+    console.log("weiPerUnit: ", weiPerUnit);
+    let tx = await BillingFactoryWithSigner.callSetCostPerUnit(companyName, costPerUnit);
+    console.log(tx);
+  }
+  
   const handleCompanyName = (e) => {
     setCompanyName(e.target.value);
   };
-
+  
   const handleTransferToAddress = (e) => {
     setTransferToAddress(e.target.value);
+  };
+  
+  const handleCostPerUnit = (e) => {
+    setCostPerUnit(e.target.value);
   };
 
   return (
@@ -143,6 +164,25 @@ const ClientBusiness = () => {
             <Box marginX={5}>
               <Button size="small" onClick={submitTransferTo}>
                 Transfer
+              </Button>
+            </Box>
+          </Flex>
+
+          <Flex marginY={1} alignItems="center">
+            <Box>
+              <Field label="Update Cost Per Unit (in ETH)">
+                <Input
+                  type="number"
+                  required
+                  placeholder="e.g. 0.001"
+                  onChange={handleCostPerUnit}
+                  value={costPerUnit}
+                  />
+              </Field>
+            </Box>
+            <Box marginX={5}>
+              <Button size="small" onClick={submitCostPerUnit}>
+                Update
               </Button>
             </Box>
           </Flex>

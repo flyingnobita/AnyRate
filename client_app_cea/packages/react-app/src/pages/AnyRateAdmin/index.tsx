@@ -47,7 +47,7 @@ const AnyRateAdmin = () => {
     if (value < 0) {
       return;
     }
-    let valueRounded = parseFloat(value).toFixed(2);
+    let valueRounded = parseFloat(value).toFixed(3);
     console.log("newAnyRateFee: ", valueRounded);
     setNewAnyRateFee(value);
   };
@@ -58,7 +58,7 @@ const AnyRateAdmin = () => {
     if (newAnyRateFee < 0 || newAnyRateFee > 1) {
       return;
     }
-    let newAnyRateFeeToSubmit = newAnyRateFee * 100;
+    let newAnyRateFeeToSubmit = 1 / newAnyRateFee;
     console.log("newAnyRateFeeToSubmit: ", newAnyRateFeeToSubmit);
 
     let tx = await billingFactoryWithSigner.setAnyRateFee(
@@ -113,7 +113,7 @@ const AnyRateAdmin = () => {
               </Flex>
               <Flex marginY={1} alignItems="center">
                 <Box>
-                  <Field label="New AnyRate Fee (<= 1, rounded to 2 DP)">
+                  <Field label="New AnyRate Fee">
                     <Input
                       type="number"
                       required

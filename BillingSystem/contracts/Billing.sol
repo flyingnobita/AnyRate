@@ -187,7 +187,7 @@ contract Billing is Ownable, ChainlinkClient {
         view
         returns (uint256 payment)
     {
-        payment = usage / costPerUnit;
+        payment = usage * costPerUnit;
     }
 
     function calculateFee(uint256 payment)
