@@ -195,14 +195,14 @@ const User = () => {
     >
       <Box width={[9 / 10]} maxWidth={800} marginTop={4}>
         <Card maxWidth={1000}>
-          <Heading as={"h1"}>User Dashboard</Heading>
+          <Heading as={"h1"}>Customer</Heading>
           <Flex>
             <Flex
               flexDirection="column"
               alignItems="flex-start"
               justifyContent="space-around"
             >
-              <Button onClick={createTreasury}>
+              {/* <Button onClick={createTreasury}>
                 Treasury Factory createTreasury()
               </Button>
 
@@ -212,7 +212,7 @@ const User = () => {
 
               <Button onClick={createBilling}>
                 Billing Factory createBilling()
-              </Button>
+              </Button> */}
 
               <Field label="Company Name">
                 <Input

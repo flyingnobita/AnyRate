@@ -108,11 +108,11 @@ const ClientBusiness = () => {
       <Box width={[9 / 10]} maxWidth={800} marginTop={4}>
         <Card maxWidth={1000}>
           <Box marginBottom={2}>
-            <Heading as={"h1"}>Business</Heading>
+            <Heading as={"h1"}>Business - Treasury Management</Heading>
           </Box>
 
           {/* <Button onClick={getTreasuryFactory}>Get Treasury Factory</Button> */}
-          <Button onClick={getTreasuryBalance}>Get Treasury Balance</Button>
+          {/* <Button onClick={getTreasuryBalance}>Get Treasury Balance</Button> */}
 
           {/* User Usage Data Endpoint */}
           <Flex flexDirection="column" alignItems="flex-start">

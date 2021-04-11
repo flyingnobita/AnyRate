@@ -13,17 +13,10 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">🏠</span>
         Home
       </NavLink>
+      _____________________________________________________________
       <NavLink to="/BillingForm" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">🏦</span>
-        Billing Form
-      </NavLink>
-      <NavLink to="/oracle" activeClassName="hurray" tabIndex={tabIndex}>
-        <span aria-hidden="true">📀</span>
-        Oracle
-      </NavLink>
-      <NavLink to="/user" activeClassName="hurray" tabIndex={tabIndex}>
-        <span aria-hidden="true">🖲️</span>
-        User
+        Create Billing Form
       </NavLink>
       <NavLink
         to="/ClientBusiness"
@@ -33,10 +26,20 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">❤️</span>
         Business
       </NavLink>
+      _____________________________________________________________
+      <NavLink to="/user" activeClassName="hurray" tabIndex={tabIndex}>
+        <span aria-hidden="true">🖲️</span>
+        Customer
+      </NavLink>
+      _____________________________________________________________
       <NavLink to="/AnyRateAdmin" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">⚙️</span>
         Admin
       </NavLink>
+      {/* <NavLink to="/oracle" activeClassName="hurray" tabIndex={tabIndex}>
+        <span aria-hidden="true">📀</span>
+        Oracle
+      </NavLink> */}
     </StyledMenu>
   );
 };

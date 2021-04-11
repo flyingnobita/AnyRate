@@ -87,7 +87,7 @@ const AnyRateAdmin = () => {
     >
       <Box width={[9 / 10]} maxWidth={800} marginTop={4}>
         <Card maxWidth={1000}>
-          <Heading as={"h1"}>Admin Dashboard</Heading>
+          <Heading as={"h1"}>AnyRate Admin</Heading>
           <Flex>
             <Flex
               flexDirection="column"
