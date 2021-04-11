@@ -7,10 +7,11 @@ import {
   Button,
   Card,
   Field,
+  Flash,
   Flex,
   Heading,
   Input,
-  Select
+  Select,
 } from "rimble-ui";
 
 const User = () => {
@@ -24,6 +25,12 @@ const User = () => {
 
   const context = useWeb3React();
 
+  useEffect(() => {
+    if (context.library) {
+      setSigner(context.library.getSigner(context.account));
+    }
+  }, [context.account, context.library]);
+
   const billingFactoryContract = new ethers.Contract(
     addresses.billingFactory,
     abis.billingFactory,
@@ -35,12 +42,6 @@ const User = () => {
     abis.treasuryFactory,
     context.library
   );
-
-  useEffect(() => {
-    if (context.library) {
-      setSigner(context.library.getSigner(context.account));
-    }
-  }, [context.account, context.library]);
 
   let BillingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
     signer
@@ -90,6 +91,10 @@ const User = () => {
     console.log("User Name: ", userName);
     console.log("depositAmount: ", depositAmount);
 
+    if (depositAmount <= 0) {
+      return;
+    }
+
     const overrides = {
       value: ethers.utils.parseEther(depositAmount.toString()),
     };
@@ -99,6 +104,7 @@ const User = () => {
       userName,
       overrides
     );
+    console.log(tx);
   }
 
   async function withdraw() {
@@ -106,11 +112,16 @@ const User = () => {
     console.log("User Name: ", userName);
     console.log("Withdraw Amount: ", withdrawAmount);
 
+    if (withdrawAmount <= 0) {
+      return;
+    }
+
     let tx = await BillingFactoryWithSigner.callWithdraw(
       companyName,
       userName,
       withdrawAmount
     );
+    console.log(tx);
   }
 
   const createBilling = (e) => {
@@ -150,7 +161,7 @@ const User = () => {
               alignItems="flex-start"
               justifyContent="space-around"
             >
-              <Button onClick={createTreasury}>
+              {/* <Button onClick={createTreasury}>
                 Treasury Factory createTreasury()
               </Button>
 
@@ -160,7 +171,7 @@ const User = () => {
 
               <Button onClick={createBilling}>
                 Billing Factory createBilling()
-              </Button>
+              </Button> */}
 
               <Field label="Company Name">
                 <Select
@@ -182,30 +193,59 @@ const User = () => {
               <Field label="Current Usage">
                 <Input type="number" required disabled value={currentUsage} />
               </Field>
-              <Field label="Account Balance">
-                <Input type="number" required disabled value={accountBalance} />
-              </Field>
-              <Button onClick={getAccountBalance}>Get Account Balance</Button>
-              <Field label="Deposit (ETH)">
-                <Input
-                  type="number"
-                  required
-                  placeholder="00"
-                  value={depositAmount}
-                  onChange={changeDeposit}
-                />
-              </Field>
-              <Button onClick={deposit}>Deposit</Button>
-              <Field label="Withdraw (ETH)">
-                <Input
-                  type="number"
-                  required
-                  placeholder="00"
-                  value={withdrawAmount}
-                  onChange={changeWithdraw}
-                />
-              </Field>
-              <Button onClick={withdraw}>Withdraw</Button>
+              <Flex marginY={1} alignItems="center">
+                <Box>
+                  <Field label="Account Balance">
+                    <Input
+                      type="number"
+                      required
+                      disabled
+                      value={accountBalance}
+                    />
+                  </Field>
+                </Box>
+                <Box marginX={5}>
+                  <Button size="small" onClick={getAccountBalance}>
+                    Get Account Balance
+                  </Button>
+                </Box>
+              </Flex>
+              <Flex marginY={1} alignItems="center">
+                <Box>
+                  <Field label="Deposit (ETH)">
+                    <Input
+                      type="number"
+                      required
+                      placeholder="00"
+                      value={depositAmount}
+                      onChange={changeDeposit}
+                    />
+                  </Field>
+                </Box>
+                <Box marginX={5}>
+                  <Button size="small" onClick={deposit}>
+                    Deposit
+                  </Button>
+                </Box>
+              </Flex>
+              <Flex marginY={1} alignItems="center">
+                <Box>
+                  <Field label="Withdraw (ETH)">
+                    <Input
+                      type="number"
+                      required
+                      placeholder="00"
+                      value={withdrawAmount}
+                      onChange={changeWithdraw}
+                    />
+                  </Field>
+                </Box>
+                <Box marginX={5}>
+                  <Button size="small" onClick={withdraw}>
+                    Withdraw
+                  </Button>
+                </Box>
+              </Flex>
             </Flex>
           </Flex>
         </Card>
