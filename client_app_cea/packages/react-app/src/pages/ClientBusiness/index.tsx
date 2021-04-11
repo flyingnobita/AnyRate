@@ -13,7 +13,7 @@ import {
   Text,
 } from "rimble-ui";
 
-const ClientBusiness = async () => {
+const ClientBusiness = () => {
   const [companyName, setCompanyName] = useState("netflix");
   const [transferToAddress, setTransferToAddress] = useState("0x00");
   const [treasuryBalance, setTreasuryBalance] = useState("0");
@@ -32,18 +32,11 @@ const ClientBusiness = async () => {
     abis.billingFactory,
     context.library
   );
-  const treasuryFactoryContract = new ethers.Contract(
-    await billingFactoryContract.treasuries[companyName],
-    abis.treasuryFactory,
-    context.library
-  );
-  let TreasuryFactoryWithSigner: ethers.Contract = treasuryFactoryContract.connect(
-    signer
-  );
   
   useEffect(() => {
-    async () => setTreasuryBalance(await TreasuryFactoryWithSigner.callBalanceOf(companyName));
-  });
+    async () => {
+      setTreasuryBalance((await treasuryFactoryWithSigner()).callBalanceOf(companyName));
+  }});
 
   const handleCompanyName = (e) => {
     setCompanyName(e.target.value);
@@ -53,9 +46,22 @@ const ClientBusiness = async () => {
     setTransferToAddress(e.target.value);
   };
 
+  const treasuryFactoryWithSigner = async () => {
+    let treasuryFactoryContract = new ethers.Contract(
+      await billingFactoryContract.treasuries[companyName],
+      abis.treasuryFactory,
+      context.library
+    );
+    let TreasuryFactoryWithSigner: ethers.Contract = treasuryFactoryContract.connect(
+      signer
+    );
+    return TreasuryFactoryWithSigner;
+  }
+
   const submitTransferTo = async () => {
     if (!transferToAddress || !companyName) { return }
-    let tx = await TreasuryFactoryWithSigner.callDepositTo(
+   
+    let tx = (await treasuryFactoryWithSigner()).callDepositTo(
       companyName,
       transferToAddress
     );
@@ -64,7 +70,8 @@ const ClientBusiness = async () => {
 
   const submitWithdrawAll = async () => {
     if (!companyName) { return }
-    let tx = await TreasuryFactoryWithSigner.callWithdrawAll(companyName);
+    
+    let tx = (await treasuryFactoryWithSigner()).callWithdrawAll(companyName);
     console.log(tx);
   };
 
