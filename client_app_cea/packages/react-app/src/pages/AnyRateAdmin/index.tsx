@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Card, Field, Flex, Heading, Input } from "rimble-ui";
 
 const AnyRateAdmin = () => {
+  const [companyName, setCompanyName] = useState("netflix");
   const [newAnyRateFee, setNewAnyRateFee] = useState(0);
   const [currentAnyRateFee, setCurrentAnyRateFee] = useState(0);
   const [signer, setSigner] = useState();
@@ -22,7 +23,7 @@ const AnyRateAdmin = () => {
     abis.billingFactory,
     context.library
   );
-  let BillingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
+  let billingFactoryWithSigner: ethers.Contract = billingFactoryContract.connect(
     signer
   );
 
@@ -60,10 +61,22 @@ const AnyRateAdmin = () => {
     let newAnyRateFeeToSubmit = newAnyRateFee * 100;
     console.log("newAnyRateFeeToSubmit: ", newAnyRateFeeToSubmit);
 
-    let tx = await BillingFactoryWithSigner.setAnyRateFee(
+    let tx = await billingFactoryWithSigner.setAnyRateFee(
       newAnyRateFeeToSubmit
     );
     console.log(tx);
+  }
+
+  const handleCompanyName = (e) => {
+    setCompanyName(e.target.value);
+  };
+
+  async function billAll() {
+    console.log(companyName);
+    billingFactoryWithSigner
+      .callBillAll(companyName)
+      .then((res) => console.log("billAll():", res))
+      .catch((err) => console.error(err));
   }
 
   return (
@@ -117,6 +130,24 @@ const AnyRateAdmin = () => {
                 </Box>
               </Flex>
             </Flex>
+          </Flex>
+          <Flex marginY={1} alignItems="center">
+            <Box>
+              <Field label="Client">
+                <Input
+                  type="text"
+                  required
+                  placeholder="Business Name e.g. netflix"
+                  value={companyName}
+                  onChange={handleCompanyName}
+                />
+              </Field>
+            </Box>
+            <Box marginLeft={5}>
+              <Button size="small" onClick={billAll}>
+                Bill All
+              </Button>
+            </Box>
           </Flex>
         </Card>
       </Box>
