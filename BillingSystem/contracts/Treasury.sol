@@ -13,7 +13,7 @@ contract Treasury is Ownable {
     receive() external payable {}
 
     // Withdraw some value
-    function transferTo(address payable to, uint256 value) onlyOwnerpublic {
+    function transferTo(address payable to, uint256 value) onlyOwner public {
         require(
             address(this).balance >= value,
             "You don't have enough liquidity to send"
