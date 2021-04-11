@@ -19,10 +19,10 @@ const BillingForm = () => {
   const [companyName, setCompanyName] = useState("netflix");
   const [billingType, setBillingType] = useState("time");
   const [endpoint, setEndpoint] = useState(
-    "https://anyrate-sails-api.herokuapp.com/api/usagecount/user/1/since/20210401"
+    "https://anyrate-client-business-api.herokuapp.com/usage"
   );
   const [frequency, setFrequency] = useState(0);
-  const [rate, setRate] = useState(2);
+  const [rate, setRate] = useState(0.001);
   const [overageThreshold, setOverageThreshold] = useState(-1);
   const [signer, setSigner] = useState();
   const [validated, setValidated] = useState(false);
@@ -104,7 +104,7 @@ const BillingForm = () => {
     console.log("endpoint: ", endpoint);
     const res = await BillingFactoryWithSigner.createBilling(
       companyName,
-      rate,
+      1 / rate,
       endpoint
     );
     console.log("createBilling: ", res);
@@ -136,7 +136,7 @@ const BillingForm = () => {
                 <Select
                   options={[
                     { value: "time", label: "Time" },
-                    // { value: "usage", label: "Usage" },
+                    { value: "usage", label: "Usage" },
                   ]}
                   required
                   value={billingType}
@@ -156,7 +156,7 @@ const BillingForm = () => {
                     type="number"
                     required
                     placeholder="0.001"
-                    step="0.000001"
+                    step="0.001"
                     onChange={handleRate}
                     value={rate}
                   />
