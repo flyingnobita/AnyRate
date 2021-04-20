@@ -57,7 +57,9 @@ const BillingForm = () => {
   };
 
   const handleCostPerUnit = (e) => {
-    setCostPerUnit(e.target.value);
+    let valueFloat = parseFloat(e.target.value);
+    let valueFloatRounded = parseFloat(valueFloat.toFixed(2));
+    setCostPerUnit(valueFloatRounded);
     validateInput(e);
   };
 
