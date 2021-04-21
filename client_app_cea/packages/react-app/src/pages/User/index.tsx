@@ -80,7 +80,8 @@ const User = () => {
 
   useEffect(() => {
     fetch(
-      "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4"
+      // "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4"
+      "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since="
     )
       .then((res) => res.json())
       .then((data) => {

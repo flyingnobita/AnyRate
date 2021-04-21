@@ -15,11 +15,11 @@ import {
 
 const ClientBusiness = () => {
   const [companyName, setCompanyName] = useState("netflix");
-  const [transferToAddress, setTransferToAddress] = useState("0x0a");
-  const [transferToAmount, setTransferToAmount] = useState(0);
+  const [transferToAddress, setTransferToAddress] = useState("");
+  const [transferToAmount, setTransferToAmount] = useState();
   const [treasuryBalance, setTreasuryBalance] = useState("0");
   const [costPerUnit, setCostPerUnit] = useState(0);
-  const [currentCostPerUnit, setCurrentCostPerUnit] = useState("0");
+  const [currentCostPerUnit, setCurrentCostPerUnit] = useState("");
   const [signer, setSigner] = useState();
   const [treasuryFactoryContract, setTreasuryFactoryContract] = useState<
     ethers.Contract
@@ -27,15 +27,16 @@ const ClientBusiness = () => {
   const [treasuryFactoryWithSigner, setTreasuryFactoryWithSigner] = useState<
     ethers.Contract
   >();
-  
+  const [billingAddress, setBillingAddress] = useState("");
+
   const context = useWeb3React();
-  
+
   useEffect(() => {
     if (context.library) {
       setSigner(context.library.getSigner(context.account));
     }
   }, [context.account, context.library]);
-  
+
   const billingFactoryContract = new ethers.Contract(
     addresses.billingFactory,
     abis.billingFactory,
@@ -59,12 +60,14 @@ const ClientBusiness = () => {
   }
 
   async function getCurrentCostPerUnit() {
-    billingFactoryContract.callGetCostPerUnit(companyName).then((data) => {
-      const dataParsed = ethers.utils.formatEther(data);
-      setCurrentCostPerUnit(dataParsed);
-      console.log("getCurrentCostPerUnit():", dataParsed);
-    })
-    .catch(err => console.error("getCurrentCostPerUnit(): ", err));
+    billingFactoryContract
+      .callGetCostPerUnit(companyName)
+      .then((data) => {
+        const dataParsed = ethers.utils.formatEther(data);
+        setCurrentCostPerUnit(dataParsed);
+        console.log("getCurrentCostPerUnit():", dataParsed);
+      })
+      .catch((err) => console.error("getCurrentCostPerUnit(): ", err));
   }
 
   useEffect(() => {
@@ -87,6 +90,22 @@ const ClientBusiness = () => {
       getTreasuryBalance();
     }
   }, [treasuryFactoryContract]);
+
+  async function getBillingAddress() {
+    let billingAddress = await billingFactoryContract.billingContracts(
+      companyName
+    );
+    setBillingAddress(billingAddress);
+    console.log("billingAddress: ", billingAddress);
+    // let _treasuryFactoryContract = new ethers.Contract(
+    //   billingAddress,
+    //   abis.treasuryFactory,
+    //   context.library
+    // );
+    // setTreasuryFactoryContract(_treasuryFactoryContract);
+    // console.log("signer: ", signer);
+    // setTreasuryFactoryWithSigner(_treasuryFactoryContract.connect(signer));
+  }
 
   const submitTransferTo = async () => {
     if (!transferToAddress || !companyName) {
@@ -121,22 +140,25 @@ const ClientBusiness = () => {
     console.log("billingFactoryWithSigner: ", BillingFactoryWithSigner);
     console.log("companyName: ", companyName);
     console.log("weiPerUnit: ", weiPerUnit);
-    let tx = await BillingFactoryWithSigner.callSetCostPerUnit(companyName, weiPerUnit);
+    let tx = await BillingFactoryWithSigner.callSetCostPerUnit(
+      companyName,
+      weiPerUnit
+    );
     console.log(tx);
   }
-  
+
   const handleCompanyName = (e) => {
     setCompanyName(e.target.value);
   };
-  
+
   const handleTransferToAddress = (e) => {
     setTransferToAddress(e.target.value);
   };
-  
+
   const handleCostPerUnit = (e) => {
     setCostPerUnit(e.target.value);
   };
-  
+
   const handleTransferToAmount = (e) => {
     setTransferToAmount(e.target.value);
   };
@@ -172,7 +194,7 @@ const ClientBusiness = () => {
                 <Input
                   type="text"
                   required
-                  placeholder="0x0a"
+                  placeholder="e.g. 0x0a"
                   onChange={handleTransferToAddress}
                   value={transferToAddress}
                 />
@@ -202,7 +224,7 @@ const ClientBusiness = () => {
                   required
                   disabled
                   value={currentCostPerUnit}
-                  />
+                />
               </Field>
             </Box>
           </Flex>
@@ -215,7 +237,7 @@ const ClientBusiness = () => {
                   placeholder="e.g. 0.001"
                   onChange={handleCostPerUnit}
                   value={costPerUnit}
-                  />
+                />
               </Field>
             </Box>
             <Box marginX={5}>
@@ -238,6 +260,25 @@ const ClientBusiness = () => {
             <Box marginX={5}>
               <Button size="small" onClick={submitWithdrawAll}>
                 Withdraw All
+              </Button>
+            </Box>
+          </Flex>
+
+          <Flex marginY={1} alignItems="center">
+            <Box>
+              <Field label="Billing Address">
+                <Input
+                  minWidth={400}
+                  type="address"
+                  required
+                  disabled
+                  value={billingAddress}
+                />
+              </Field>
+            </Box>
+            <Box marginX={5}>
+              <Button size="small" onClick={getBillingAddress}>
+                Get Billing Address
               </Button>
             </Box>
           </Flex>

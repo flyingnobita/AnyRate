@@ -22,11 +22,11 @@ contract BillingFactory {
     receive() external payable {}
 
     function createBilling(
-        string memory name,
+        string memory clientName,
         uint256 costPerUnit,
         string memory usageURL
     ) public {
-        Treasury clientTreasury = treasuryFactory.createTreasury(name);
+        Treasury clientTreasury = treasuryFactory.createTreasury(clientName);
         Billing billing =
             new Billing(
                 clientTreasury,
@@ -35,8 +35,8 @@ contract BillingFactory {
                 costPerUnit,
                 usageURL
             );
-        clients.push(name);
-        billingContracts[name] = billing;
+        clients.push(clientName);
+        billingContracts[clientName] = billing;
     }
 
     /////
@@ -61,53 +61,52 @@ contract BillingFactory {
     // Client Business
 
     function callSetBusinessTreasury(
-        string memory name,
+        string memory clientName,
         address payable treasury
     ) public {
-        billingContracts[name].setBusinessTreasury(Treasury(treasury));
+        billingContracts[clientName].setBusinessTreasury(Treasury(treasury));
     }
 
-    function callSetCostPerUnit(string memory name, uint256 _costPerUnit)
+    function callSetCostPerUnit(string memory clientName, uint256 _costPerUnit)
         public
     {
-        billingContracts[name].setCostPerUnit(_costPerUnit);
+        billingContracts[clientName].setCostPerUnit(_costPerUnit);
     }
 
-    function callGetCostPerUnit(string memory name)
+    function callGetCostPerUnit(string memory clientName)
         public
         view
         returns (uint256)
     {
-        return billingContracts[name].costPerUnit();
+        return billingContracts[clientName].costPerUnit();
     }
 
     /////
     // User Accounts
 
     // Send value to this contract on behalf of an account
-    function callDepositTo(string calldata name, string calldata account)
+    function callDepositTo(string calldata clientName, string calldata account)
         external
         payable
     {
-        Billing clientBilling = Billing(billingContracts[name]);
+        Billing clientBilling = Billing(billingContracts[clientName]);
         clientBilling.depositTo{value: msg.value}(account);
     }
 
-    function callAccountBalance(string calldata name, string calldata account)
-        external
-        view
-        returns (uint256 balance)
-    {
-        Billing clientBilling = Billing(billingContracts[name]);
+    function callAccountBalance(
+        string calldata clientName,
+        string calldata account
+    ) external view returns (uint256 balance) {
+        Billing clientBilling = Billing(billingContracts[clientName]);
         balance = clientBilling.accountBalance(account);
     }
 
     function callWithdraw(
-        string calldata name,
+        string calldata clientName,
         string calldata account,
         uint256 amount
     ) external {
-        Billing clientBilling = Billing(billingContracts[name]);
+        Billing clientBilling = Billing(billingContracts[clientName]);
         clientBilling.withdraw(account, amount);
     }
 
@@ -115,7 +114,7 @@ contract BillingFactory {
     // Billing
 
     // Bill everyone
-    function callBillAll(string memory name) public {
-        billingContracts[name].billAll();
+    function callBillAll(string memory clientName) public {
+        billingContracts[clientName].billAll();
     }
 }

@@ -4,15 +4,18 @@ import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, Input } from "rimble-ui";
 
-let oracleAddress = "0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b";
+// let oracleAddress = "0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b";
+let oracleAddress = "0x1b666ad0d20bC4F35f218120d7ed1e2df60627cC";
 let jobId: string = ethers.utils.hexlify(
-  ethers.utils.toUtf8CodePoints("c7dd72ca14b44f0c9b6cfcd4b7ec0a2c") // uint256
+  // ethers.utils.toUtf8CodePoints("c7dd72ca14b44f0c9b6cfcd4b7ec0a2c") // uint256
+  ethers.utils.toUtf8CodePoints("2d3cc1fdfede46a0830bbbf5c0de2528") // uint256
 );
 let fee: string = (0.1 * 10 ** 18).toString(); // 0.1 Link
 
 async function CallOracleUsage(contract) {
   let url: string =
-    "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4";
+    "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
+  // "https://anyrate-client-business-api.herokuapp.com/usage?account=b&since=4";
   let path: string = "count";
 
   contract

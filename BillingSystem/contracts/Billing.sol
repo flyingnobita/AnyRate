@@ -7,7 +7,10 @@ import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 
 import "hardhat/console.sol";
 
-contract Billing is Ownable, ChainlinkClient {
+contract Billing is ChainlinkClient, Ownable {
+    address private linkTokenAddressKovan =
+        0xa36085F69e2889c224210F603D836748e7dC0088;
+
     Treasury clientTreasury;
     Treasury anyRateTreasury;
     uint256 public anyRateFee;
@@ -47,8 +50,10 @@ contract Billing is Ownable, ChainlinkClient {
         costPerUnit = _costPerUnit;
         usageURL = _usageURL;
 
-        chainlinkNode = 0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b;
-        jobId = "c7dd72ca14b44f0c9b6cfcd4b7ec0a2c";
+        // setChainlinkToken(linkTokenAddressKovan);
+        setPublicChainlinkToken();
+        chainlinkNode = 0x1b666ad0d20bC4F35f218120d7ed1e2df60627cC;
+        jobId = "2d3cc1fdfede46a0830bbbf5c0de2528";
         oracleFees = 0.1 * 10**18; // 0.1 LINK
         usagePath = "count";
         accountId = 0;
@@ -110,7 +115,8 @@ contract Billing is Ownable, ChainlinkClient {
                     since
                 )
             );
-        console.log("callChainlinkUsage - 1");
+        console.log("url: ", url);
+
         Chainlink.Request memory req =
             buildChainlinkRequest(
                 jobId,

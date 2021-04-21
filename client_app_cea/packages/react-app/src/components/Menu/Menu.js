@@ -36,10 +36,10 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">⚙️</span>
         Admin
       </NavLink>
-      {/* <NavLink to="/oracle" activeClassName="hurray" tabIndex={tabIndex}>
+      <NavLink to="/oracle" activeClassName="hurray" tabIndex={tabIndex}>
         <span aria-hidden="true">📀</span>
         Oracle
-      </NavLink> */}
+      </NavLink>
     </StyledMenu>
   );
 };
