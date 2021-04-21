@@ -45,6 +45,9 @@ describe("BillingFactory", () => {
 
   describe("Billing", async () => {
     it("Should bill all customers for a client", async () => {
+      await bf.callDepositTo("corp", "xo", {
+        value: ethers.utils.parseEther("1.0"),
+      });
       await bf.callBillAll("corp");
     });
   });
