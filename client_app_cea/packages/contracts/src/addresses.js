@@ -2,7 +2,7 @@
 // Goerli, Kovan, Rinkeby and Ropsten. Replace it with your smart contracts.
 const addresses = {
   anyRateOracle: "0x998D98e9480A8f52A5252Faf316d129765773294",
-  billingFactory: "0x2097758B59A3ADBB95C92461649A2C7ea9754Bfd",
+  billingFactory: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
   treasuryFactory: "0x68B1D87F95878fE05B998F19b66F4baba5De1aed",
 };
 

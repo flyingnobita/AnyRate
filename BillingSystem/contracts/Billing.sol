@@ -95,7 +95,15 @@ contract Billing is Ownable, ChainlinkClient {
         string memory since = accountDetails[account].lastUsageCall;
         accountDetails[account].lastUsageCall = uintToString(now);
         string memory url =
-            string(abi.encodePacked(usageURL, "?account=", account, "&since=", since));
+            string(
+                abi.encodePacked(
+                    usageURL,
+                    "?account=",
+                    account,
+                    "&since=",
+                    since
+                )
+            );
 
         Chainlink.Request memory req =
             buildChainlinkRequest(
@@ -127,6 +135,10 @@ contract Billing is Ownable, ChainlinkClient {
 
     function setAnyRateTreasury(Treasury treasury) public {
         anyRateTreasury = treasury;
+    }
+
+    function getAnyRateTreasury() public view returns (Treasury) {
+        return anyRateTreasury;
     }
 
     function setFee(uint256 _anyRateFee) public {
@@ -169,13 +181,19 @@ contract Billing is Ownable, ChainlinkClient {
     // Todo: Update known address or let knownAddresses be an array
 
     function withdraw(string calldata account, uint256 amount)
-    onlyOwner
-    external
+        external
+        onlyOwner
     {
-      require(accountDetails[account].balance > amount, 'This account does not have enough to withdraw');
-      require(accountDetails[account].knownAddress == msg.sender, 'This account may not belong to the requester');
-      accountDetails[account].balance -= amount;
-      msg.sender.transfer(amount);
+        require(
+            accountDetails[account].balance > amount,
+            "This account does not have enough to withdraw"
+        );
+        require(
+            accountDetails[account].knownAddress == msg.sender,
+            "This account may not belong to the requester"
+        );
+        accountDetails[account].balance -= amount;
+        msg.sender.transfer(amount);
     }
 
     /////
@@ -190,19 +208,12 @@ contract Billing is Ownable, ChainlinkClient {
         payment = usage * costPerUnit;
     }
 
-    function calculateFee(uint256 payment)
-        internal
-        view
-        returns (uint256 fee)
-    {
-        fee = payment / anyRateFee;
+    function calculateFee(uint256 payment) internal view returns (uint256 fee) {
+        fee = (payment * anyRateFee) / 10000;
     }
 
     // Pay treasuries specified amounts
-    function bill(string memory account, uint256 usage)
-        onlyOwner
-        public
-    {
+    function bill(string memory account, uint256 usage) public onlyOwner {
         uint256 payment = calculatePayment(usage);
         uint256 fee = calculateFee(payment);
         if (accountDetails[account].balance < payment) {
