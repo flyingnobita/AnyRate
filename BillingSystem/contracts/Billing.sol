@@ -172,6 +172,9 @@ contract Billing is ChainlinkClient, Ownable {
         public
         recordChainlinkFulfillment(requestId)
     {
+        // TODO requests sent and processed by chainlink node but still
+        // have errors.  Maybe should separate usage api and billing
+        // where both are called manually
         bill(requestIdsAccounts[requestId], usage);
     }
 
