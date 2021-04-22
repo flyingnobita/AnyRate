@@ -118,6 +118,7 @@ describe("Billing", () => {
 
     it("Should bill all accounts for client", async () => {
       await billing.billAll();
+      // await billing.callAnyRateOracle();
     });
   });
 });

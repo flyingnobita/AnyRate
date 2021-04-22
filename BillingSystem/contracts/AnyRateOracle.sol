@@ -10,6 +10,8 @@ pragma solidity ^0.6.6;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title AnyRateOracle is an example contract which requests data from
  * the Chainlink network
@@ -58,7 +60,9 @@ contract AnyRateOracle is ChainlinkClient, Ownable {
         uint256 _payment,
         string memory _url,
         string memory _path
-    ) public onlyOwner returns (bytes32 requestId) {
+    ) public returns (bytes32 requestId) {
+        console.log("AnyRateOracle.createRequestForUsage()");
+
         Chainlink.Request memory req =
             buildChainlinkRequest(
                 _jobId,

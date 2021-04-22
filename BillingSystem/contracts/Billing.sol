@@ -2,25 +2,27 @@
 pragma solidity ^0.6.6;
 
 import "./Treasury.sol";
+import "./AnyRateOracle.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
+// import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 
 import "hardhat/console.sol";
 
-contract Billing is ChainlinkClient, Ownable {
-    address private linkTokenAddressKovan =
-        0xa36085F69e2889c224210F603D836748e7dC0088;
-
+contract Billing is Ownable {
     Treasury clientTreasury;
     Treasury anyRateTreasury;
     uint256 public anyRateFee;
     uint256 public costPerUnit;
-    address private chainlinkNode;
     string private usageURL;
-    bytes32 private jobId;
-    uint256 private oracleFees;
-    string private usagePath;
-    uint256 private accountId; // string[] doesn't have length, use accountId to keep track
+
+    address public linkTokenAddressKovan =
+        0xa36085F69e2889c224210F603D836748e7dC0088;
+    address private chainlinkNode = 0x1b666ad0d20bC4F35f218120d7ed1e2df60627cC;
+    bytes32 private jobId = stringToBytes32("2d3cc1fdfede46a0830bbbf5c0de2528");
+    uint256 private oracleFees = 0.1 * 10**18; // 0.1 LINK
+    string private usagePath = "count";
+    uint256 private accountId = 0; // string[] doesn't have length, use accountId to keep track
+    AnyRateOracle anyRateOracle;
 
     struct Account {
         string accountName;
@@ -50,13 +52,11 @@ contract Billing is ChainlinkClient, Ownable {
         costPerUnit = _costPerUnit;
         usageURL = _usageURL;
 
+        anyRateOracle = AnyRateOracle(
+            0x4E08A865F6e0Cb25398a09e5180097c090406D40
+        );
         // setChainlinkToken(linkTokenAddressKovan);
-        setPublicChainlinkToken();
-        chainlinkNode = 0x1b666ad0d20bC4F35f218120d7ed1e2df60627cC;
-        jobId = "2d3cc1fdfede46a0830bbbf5c0de2528";
-        oracleFees = 0.1 * 10**18; // 0.1 LINK
-        usagePath = "count";
-        accountId = 0;
+        // setPublicChainlinkToken();
     }
 
     receive() external payable {}
@@ -97,37 +97,68 @@ contract Billing is ChainlinkClient, Ownable {
      * be taken into consideration in Factory.
      * @return requestId passed to the callback function
      */
-    function callChainlinkUsage(string memory accountName)
-        internal
-        onlyOwner
-        returns (bytes32 requestId)
-    {
-        console.log("callChainlinkUsage - BEGIN");
-        string memory since = accountDetails[accountName].lastUsageCall;
-        accountDetails[accountName].lastUsageCall = uintToString(now);
-        string memory url =
-            string(
-                abi.encodePacked(
-                    usageURL,
-                    "?account=",
-                    accountName,
-                    "&since=",
-                    since
-                )
-            );
-        console.log("url: ", url);
+    // function callChainlinkUsage(string memory accountName)
+    //     public
+    //     onlyOwner
+    //     returns (bytes32 requestId)
+    // {
+    // console.log("callChainlinkUsage - BEGIN");
+    // string memory since = accountDetails[accountName].lastUsageCall;
+    // accountDetails[accountName].lastUsageCall = uintToString(now);
+    // string memory url =
+    //     string(
+    //         abi.encodePacked(
+    //             usageURL,
+    //             "?account=",
+    //             accountName,
+    //             "&since=",
+    //             since
+    //         )
+    //     );
 
-        Chainlink.Request memory req =
-            buildChainlinkRequest(
-                jobId,
-                address(this),
-                this.usageCallback.selector
-            );
-        console.log("callChainlinkUsage - 2");
-        req.add("url", url);
-        req.add("path", usagePath);
-        requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
-        console.log("callChainlinkUsage - FINISH");
+    //     string memory url =
+    //         "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
+
+    //     console.log("url: ", url);
+    //     console.log("usagePath: ", usagePath);
+
+    //     Chainlink.Request memory req =
+    //         buildChainlinkRequest(
+    //             jobId,
+    //             address(this),
+    //             this.usageCallback.selector
+    //         );
+    //     console.log("callChainlinkUsage - 2");
+    //     req.add("url", url);
+    //     req.add("path", usagePath);
+    //     console.log("chainlinkNode: ", chainlinkNode);
+    //     console.log("oracleFees: ", oracleFees);
+
+    //     requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
+    //     console.log("callChainlinkUsage - FINISH");
+    // }
+
+    /**
+     * @notice Calls AnyRateOracle.createRequestForUsage() instead of directly
+     * calling Chain Link Node
+     */
+    function callAnyRateOracle() public {
+        string memory url =
+            "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
+
+        console.log("callAnyRateOracle()");
+        console.log("chainlinkNode: ", chainlinkNode);
+        console.log("oracleFees: ", oracleFees);
+        console.log("url: ", url);
+        console.log("usagePath: ", usagePath);
+
+        anyRateOracle.createRequestForUsage(
+            chainlinkNode,
+            jobId,
+            oracleFees,
+            url,
+            usagePath
+        );
     }
 
     /**
@@ -137,12 +168,12 @@ contract Billing is ChainlinkClient, Ownable {
      * Function needs to be adapted depending on the type of usage endpoint used.
      * @param usage uint256 / number
      */
-    function usageCallback(bytes32 requestId, uint256 usage)
-        public
-    // recordChainlinkFulfillment(requestId)
-    {
-        bill(requestIdsAccounts[requestId], usage);
-    }
+    // function usageCallback(bytes32 requestId, uint256 usage)
+    //     public
+    //     recordChainlinkFulfillment(requestId)
+    // {
+    //     bill(requestIdsAccounts[requestId], usage);
+    // }
 
     /////
     // AnyRate
@@ -246,14 +277,17 @@ contract Billing is ChainlinkClient, Ownable {
 
     // Iterate over accounts while deducting from each
     // TODO: Send payments and fees from Billing to treasuries in 2 cumulative transactions
-    function billAll() public onlyOwner {
+    function billAll() public {
         console.log("Billing.billAll()");
-        console.log("accountId: ", accountId);
-        for (uint256 i = 0; i < accountId; i++) {
-            console.log("i: ", i);
-            console.log("accountArray[i]: ", accountArray[i]);
-            callChainlinkUsage(accountArray[i]);
-        }
+        callAnyRateOracle();
+
+        // console.log("accountId: ", accountId);
+        // for (uint256 i = 0; i < accountId; i++) {
+        // console.log("i: ", i);
+        // console.log("accountArray[i]: ", accountArray[i]);
+        // callChainlinkUsage(accountArray[i]);
+        // callAnyRateOracle();
+        // }
     }
 
     /////
@@ -280,5 +314,21 @@ contract Billing is ChainlinkClient, Ownable {
             value /= 10;
         }
         return string(bstr);
+    }
+
+    function stringToBytes32(string memory source)
+        private
+        pure
+        returns (bytes32 result)
+    {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            // solhint-disable-line no-inline-assembly
+            result := mload(add(source, 32))
+        }
     }
 }

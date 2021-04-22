@@ -2,6 +2,10 @@
 const { expect } = require("chai");
 require("dotenv").config();
 
+const clientName = "netflix";
+const accountName = "a";
+const usageURL = "https://anyrate-client-business-api.herokuapp.com/usage";
+
 describe("BillingFactory", () => {
   before(async () => {
     BillingFactory = await ethers.getContractFactory("BillingFactory");
@@ -9,7 +13,7 @@ describe("BillingFactory", () => {
 
   beforeEach(async () => {
     bf = await BillingFactory.deploy(500);
-    await bf.createBilling("corp", 3, "corp.com");
+    await bf.createBilling(clientName, 3, usageURL);
   });
 
   describe("Basics", async () => {
@@ -18,7 +22,7 @@ describe("BillingFactory", () => {
     });
 
     it("Should contain client business names", async () => {
-      expect(await bf.clients(0)).to.eq("corp");
+      expect(await bf.clients(0)).to.eq(clientName);
     });
   });
 
@@ -33,22 +37,22 @@ describe("BillingFactory", () => {
     it("Should allow deposits to child contracts", async () => {
       // Sending value with transaction
       // is the value forwarded?
-      await bf.callDepositTo("corp", "xo", {
+      await bf.callDepositTo(clientName, accountName, {
         value: ethers.utils.parseEther("1.0"),
       });
       const [account] = await ethers.getSigners();
-      expect((await bf.callAccountBalance("corp", "xo")).toString()).to.equal(
-        ethers.utils.parseEther("1.0").toString()
-      );
+      expect(
+        (await bf.callAccountBalance(clientName, accountName)).toString()
+      ).to.equal(ethers.utils.parseEther("1.0").toString());
     });
   });
 
   describe("Billing", async () => {
     it("Should bill all customers for a client", async () => {
-      await bf.callDepositTo("corp", "xo", {
+      await bf.callDepositTo(clientName, accountName, {
         value: ethers.utils.parseEther("1.0"),
       });
-      await bf.callBillAll("corp");
+      await bf.callBillAll(clientName);
     });
   });
 });
