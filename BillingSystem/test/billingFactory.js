@@ -5,6 +5,8 @@ require("dotenv").config();
 const clientName = "netflix";
 const accountName = "a";
 const usageURL = "https://anyrate-client-business-api.herokuapp.com/usage";
+anyRateFee = 200; // out of 10000; in percentage up to 2dp; e.g. 200 = 2.00%
+anyRateFeeNew = 400;
 
 describe("BillingFactory", () => {
   before(async () => {
@@ -12,13 +14,13 @@ describe("BillingFactory", () => {
   });
 
   beforeEach(async () => {
-    bf = await BillingFactory.deploy(500);
+    bf = await BillingFactory.deploy(anyRateFee);
     await bf.createBilling(clientName, 3, usageURL);
   });
 
   describe("Basics", async () => {
     it("Should contain a default fee", async () => {
-      expect((await bf.anyRateFee()).toNumber()).to.eq(500);
+      expect((await bf.anyRateFee()).toNumber()).to.eq(anyRateFee);
     });
 
     it("Should contain client business names", async () => {
@@ -28,8 +30,8 @@ describe("BillingFactory", () => {
 
   describe("AnyRate Admin", async () => {
     it("Update AnyRate Fee", async () => {
-      await bf.setAnyRateFee(400);
-      expect((await bf.anyRateFee()).toNumber()).to.eq(400);
+      await bf.setAnyRateFee(anyRateFeeNew);
+      expect((await bf.anyRateFee()).toNumber()).to.eq(anyRateFeeNew);
     });
   });
 

@@ -23,6 +23,7 @@ contract Billing is ChainlinkClient, Ownable {
     string private usagePath = "count";
     uint256 private accountId = 0; // string[] doesn't have length, use accountId to keep track
     AnyRateOracle anyRateOracle;
+    uint256 public usageReturned;
 
     struct Account {
         string accountName;
@@ -102,21 +103,21 @@ contract Billing is ChainlinkClient, Ownable {
         returns (bytes32 requestId)
     {
         console.log("callChainlinkUsage - BEGIN");
-        // string memory since = accountDetails[accountName].lastUsageCall;
-        // accountDetails[accountName].lastUsageCall = uintToString(now);
-        // string memory url =
-        //     string(
-        //         abi.encodePacked(
-        //             usageURL,
-        //             "?account=",
-        //             accountName,
-        //             "&since=",
-        //             since
-        //         )
-        //     );
-
+        string memory since = accountDetails[accountName].lastUsageCall;
+        accountDetails[accountName].lastUsageCall = uintToString(now);
         string memory url =
-            "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
+            string(
+                abi.encodePacked(
+                    usageURL,
+                    "?account=",
+                    accountName,
+                    "&since=",
+                    since
+                )
+            );
+
+        // string memory url =
+        //     "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
 
         console.log("url: ", url);
         console.log("usagePath: ", usagePath);
@@ -172,10 +173,11 @@ contract Billing is ChainlinkClient, Ownable {
         public
         recordChainlinkFulfillment(requestId)
     {
-        // TODO requests sent and processed by chainlink node but still
-        // have errors.  Maybe should separate usage api and billing
-        // where both are called manually
-        bill(requestIdsAccounts[requestId], usage);
+        usageReturned = usage;
+    }
+
+    function getUsageReturned() public view returns (uint256) {
+        return usageReturned;
     }
 
     /////
@@ -256,16 +258,28 @@ contract Billing is ChainlinkClient, Ownable {
         returns (uint256 payment)
     {
         payment = usage * costPerUnit;
+        console.log("calculatePayment()");
+        console.log("usage: ", usage);
+        console.log("costPerUnit: ", costPerUnit);
+        console.log("payment: ", payment);
     }
 
     function calculateFee(uint256 payment) internal view returns (uint256 fee) {
         fee = (payment * anyRateFee) / 10000;
+        console.log("calculateFee()");
+        console.log("anyRateFee: ", anyRateFee);
+        console.log("fee: ", fee);
     }
 
     // Pay treasuries specified amounts
+    // TODO: Getting called but not working in Web UI
     function bill(string memory accountName, uint256 usage) public onlyOwner {
         uint256 payment = calculatePayment(usage);
         uint256 fee = calculateFee(payment);
+        console.log(
+            "accountDetails[accountName].balance: ",
+            accountDetails[accountName].balance
+        );
         if (accountDetails[accountName].balance < payment) {
             emit InsufficientFunds(
                 accountName,
@@ -279,18 +293,14 @@ contract Billing is ChainlinkClient, Ownable {
     }
 
     // Iterate over accounts while deducting from each
-    // TODO: Send payments and fees from Billing to treasuries in 2 cumulative transactions
     function billAll() public {
         console.log("Billing.billAll()");
-        // callAnyRateOracle();
-
-        // console.log("accountId: ", accountId);
         // for (uint256 i = 0; i < accountId; i++) {
         // console.log("i: ", i);
         // console.log("accountArray[i]: ", accountArray[i]);
         // callChainlinkUsage(accountArray[i]);
+        bill("a", usageReturned);
         // }
-        callChainlinkUsage("a");
     }
 
     /////

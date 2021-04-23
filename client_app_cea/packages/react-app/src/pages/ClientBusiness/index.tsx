@@ -28,6 +28,11 @@ const ClientBusiness = () => {
     ethers.Contract
   >();
   const [billingAddress, setBillingAddress] = useState("");
+  const [billingContract, setBillingContract] = useState<ethers.Contract>();
+  const [billingContractWithSigner, setBillingContractWithSigner] = useState<
+    ethers.Contract
+  >();
+  const [oracleUsage, setOracleUsage] = useState(0);
 
   const context = useWeb3React();
 
@@ -96,15 +101,23 @@ const ClientBusiness = () => {
       companyName
     );
     setBillingAddress(billingAddress);
-    console.log("billingAddress: ", billingAddress);
-    // let _treasuryFactoryContract = new ethers.Contract(
-    //   billingAddress,
-    //   abis.treasuryFactory,
-    //   context.library
-    // );
-    // setTreasuryFactoryContract(_treasuryFactoryContract);
-    // console.log("signer: ", signer);
-    // setTreasuryFactoryWithSigner(_treasuryFactoryContract.connect(signer));
+    let _billingContract = new ethers.Contract(
+      billingAddress,
+      abis.billing,
+      context.library
+    );
+    setBillingContract(_billingContract);
+    setBillingContractWithSigner(_billingContract.connect(signer));
+  }
+
+  async function getOracleUsage() {
+    console.log("billingContract: ", billingContract);
+    let usageReturned = await billingContract.getUsageReturned();
+    setOracleUsage(usageReturned);
+  }
+
+  async function callChainlinkUsage() {
+    await billingContractWithSigner.callChainlinkUsage("a");
   }
 
   const submitTransferTo = async () => {
@@ -282,6 +295,23 @@ const ClientBusiness = () => {
               </Button>
             </Box>
           </Flex>
+
+          <Flex marginY={1} alignItems="center">
+            <Box>
+              <Field label="Billing.usageReturned">
+                <Input type="number" required disabled value={oracleUsage} />
+              </Field>
+            </Box>
+            <Box marginX={5}>
+              <Button size="small" onClick={getOracleUsage}>
+                [Call Get Billing Address 1st!] Get Billing.getUsageReturned()
+              </Button>
+            </Box>
+          </Flex>
+          <Button size="small" onClick={callChainlinkUsage}>
+            [Make sure Billing.sol has Link token!]
+            Billing.callChainlinkUsage("a")
+          </Button>
         </Card>
       </Box>
     </Flex>
