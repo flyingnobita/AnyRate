@@ -7,10 +7,10 @@ import {
   Button,
   Card,
   Field,
+  Flash,
   Flex,
   Heading,
   Input,
-  Text,
 } from "rimble-ui";
 
 const ClientBusiness = () => {
@@ -284,44 +284,54 @@ const ClientBusiness = () => {
             </Box>
           </Flex>
 
-          <Flex marginY={1} alignItems="center">
-            <Box>
-              <Field label="Billing Address">
-                <Input
-                  minWidth={400}
-                  type="address"
-                  required
-                  disabled
-                  value={billingAddress}
-                />
-              </Field>
-            </Box>
-            <Box marginX={5}>
-              <Button size="small" onClick={getBillingAddress}>
-                Get Billing Address
-              </Button>
-            </Box>
-          </Flex>
+          <Box bg="beige" paddingY={2} paddingX={2}>
+            <h4>Debug</h4>
+            <Flex marginY={1} alignItems="center">
+              <Box>
+                <Field label="Billing Address">
+                  <Input
+                    minWidth={400}
+                    type="address"
+                    required
+                    disabled
+                    value={billingAddress}
+                  />
+                </Field>
+              </Box>
+              <Box marginX={5}>
+                <Button size="small" onClick={getBillingAddress}>
+                  Get Billing Address
+                </Button>
+              </Box>
+            </Flex>
 
-          <Flex marginY={1} alignItems="center">
-            <Box>
-              <Field label="Billing.usageReturned">
-                <Input type="number" required disabled value={oracleUsage} />
-              </Field>
-            </Box>
-            <Box marginX={5}>
-              <Button size="small" onClick={getOracleUsage}>
-                [Call Get Billing Address 1st!] Get Billing.getUsageReturned()
-              </Button>
-              <Button size="small" onClick={setOracleUsageOverride}>
-                [Call Get Billing Address 1st!] Manual Oracle Usage Override
-              </Button>
-            </Box>
-          </Flex>
-          <Button size="small" onClick={callChainlinkUsage}>
-            [Make sure Billing.sol has Link token!]
-            Billing.callChainlinkUsage("a")
-          </Button>
+            <h6>Require Calling "Get Billing Address" First</h6>
+            <Flex marginY={1} alignItems="center">
+              <Box>
+                <Field label="Billing.usageReturned">
+                  <Input type="number" required disabled value={oracleUsage} />
+                </Field>
+              </Box>
+              <Box marginX={5}>
+                <Button size="small" onClick={getOracleUsage}>
+                  Get Billing.getUsageReturned()
+                </Button>
+              </Box>
+              <Box marginX={0.5}>
+                <Button size="small" onClick={setOracleUsageOverride}>
+                  Manual Oracle Usage Override
+                </Button>
+              </Box>
+            </Flex>
+            <h6>Reqire Billing.sol has Link token</h6>
+            <Flex marginY={1} alignItems="center">
+              <Box marginX={0}>
+                <Button size="small" onClick={callChainlinkUsage}>
+                  Billing.callChainlinkUsage("a")
+                </Button>
+              </Box>
+            </Flex>
+          </Box>
         </Card>
       </Box>
     </Flex>
