@@ -5,7 +5,7 @@ import "./Billing.sol";
 import "./TreasuryFactory.sol";
 import "./Treasury.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract BillingFactory {
     TreasuryFactory public treasuryFactory;
@@ -117,9 +117,6 @@ contract BillingFactory {
 
     // Bill everyone
     function callBillAll(string memory clientName) public {
-        // console.log("callBillAll.clientName: ", clientName);
         billingContracts[clientName].billAll();
-        // Billing clientBilling = Billing(billingContracts[clientName]);
-        // clientBilling.billAll();
     }
 }

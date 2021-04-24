@@ -204,6 +204,11 @@
         "internalType": "address",
         "name": "knownAddress",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "usageReturned",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -228,11 +233,6 @@
         "internalType": "string",
         "name": "accountName",
         "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "usage",
-        "type": "uint256"
       }
     ],
     "name": "bill",
@@ -243,13 +243,6 @@
   {
     "inputs": [],
     "name": "billAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "callAnyRateOracle",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -313,7 +306,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_accountName",
+        "type": "string"
+      }
+    ],
     "name": "getUsageReturned",
     "outputs": [
       {
@@ -472,6 +471,24 @@
     "inputs": [
       {
         "internalType": "string",
+        "name": "_accountName",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "usage",
+        "type": "uint256"
+      }
+    ],
+    "name": "setUsage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
         "name": "_usageURL",
         "type": "string"
       }
@@ -510,19 +527,6 @@
     "name": "usageCallback",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "usageReturned",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

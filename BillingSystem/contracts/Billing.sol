@@ -2,11 +2,11 @@
 pragma solidity ^0.6.6;
 
 import "./Treasury.sol";
-import "./AnyRateOracle.sol";
+// import "./AnyRateOracle.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract Billing is ChainlinkClient, Ownable {
     Treasury clientTreasury;
@@ -22,8 +22,7 @@ contract Billing is ChainlinkClient, Ownable {
     uint256 private oracleFees = 0.1 * 10**18; // 0.1 LINK
     string private usagePath = "count";
     uint256 private accountId = 0; // string[] doesn't have length, use accountId to keep track
-    AnyRateOracle anyRateOracle;
-    uint256 public usageReturned;
+    // AnyRateOracle anyRateOracle;
 
     struct Account {
         string accountName;
@@ -31,6 +30,7 @@ contract Billing is ChainlinkClient, Ownable {
         uint256 balance;
         string lastUsageCall;
         address knownAddress;
+        uint256 usageReturned;
     }
 
     string[] public accountArray;
@@ -53,9 +53,9 @@ contract Billing is ChainlinkClient, Ownable {
         costPerUnit = _costPerUnit;
         usageURL = _usageURL;
 
-        anyRateOracle = AnyRateOracle(
-            0x4E08A865F6e0Cb25398a09e5180097c090406D40
-        );
+        // anyRateOracle = AnyRateOracle(
+        //     0x4E08A865F6e0Cb25398a09e5180097c090406D40
+        // );
         setChainlinkToken(linkTokenAddressKovan);
         // setPublicChainlinkToken();
     }
@@ -102,7 +102,6 @@ contract Billing is ChainlinkClient, Ownable {
         public
         returns (bytes32 requestId)
     {
-        console.log("callChainlinkUsage - BEGIN");
         string memory since = accountDetails[accountName].lastUsageCall;
         accountDetails[accountName].lastUsageCall = uintToString(now);
         string memory url =
@@ -119,48 +118,41 @@ contract Billing is ChainlinkClient, Ownable {
         // string memory url =
         //     "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
 
-        console.log("url: ", url);
-        console.log("usagePath: ", usagePath);
-
         Chainlink.Request memory req =
             buildChainlinkRequest(
                 jobId,
                 address(this),
                 this.usageCallback.selector
             );
-        console.log("callChainlinkUsage - 2");
         req.add("url", url);
         req.add("path", usagePath);
-        console.log("chainlinkNode: ", chainlinkNode);
-        console.log("oracleFees: ", oracleFees);
 
         requestId = sendChainlinkRequestTo(chainlinkNode, req, oracleFees);
         requestIdsAccounts[requestId] = accountName;
-        console.log("callChainlinkUsage - FINISH");
     }
 
     /**
      * @notice Calls AnyRateOracle.createRequestForUsage() instead of directly
      * calling Chain Link Node
      */
-    function callAnyRateOracle() public {
-        string memory url =
-            "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
+    // function callAnyRateOracle() public {
+    //     string memory url =
+    //         "https://anyrate-client-business-api.herokuapp.com/usage?account=a&since=";
 
-        console.log("callAnyRateOracle()");
-        console.log("chainlinkNode: ", chainlinkNode);
-        console.log("oracleFees: ", oracleFees);
-        console.log("url: ", url);
-        console.log("usagePath: ", usagePath);
+    //     console.log("callAnyRateOracle()");
+    //     console.log("chainlinkNode: ", chainlinkNode);
+    //     console.log("oracleFees: ", oracleFees);
+    //     console.log("url: ", url);
+    //     console.log("usagePath: ", usagePath);
 
-        anyRateOracle.createRequestForUsage(
-            chainlinkNode,
-            jobId,
-            oracleFees,
-            url,
-            usagePath
-        );
-    }
+    //     anyRateOracle.createRequestForUsage(
+    //         chainlinkNode,
+    //         jobId,
+    //         oracleFees,
+    //         url,
+    //         usagePath
+    //     );
+    // }
 
     /**
      * @notice Callback function for callChainlinkUsage()
@@ -173,11 +165,20 @@ contract Billing is ChainlinkClient, Ownable {
         public
         recordChainlinkFulfillment(requestId)
     {
-        usageReturned = usage;
+        string memory _accountName = requestIdsAccounts[requestId];
+        accountDetails[_accountName].usageReturned = usage;
     }
 
-    function getUsageReturned() public view returns (uint256) {
-        return usageReturned;
+    function getUsageReturned(string memory _accountName)
+        public
+        view
+        returns (uint256)
+    {
+        return accountDetails[_accountName].usageReturned;
+    }
+
+    function setUsage(string memory _accountName, uint256 usage) public {
+        accountDetails[_accountName].usageReturned = usage;
     }
 
     /////
@@ -219,6 +220,14 @@ contract Billing is ChainlinkClient, Ownable {
             accountId++;
         }
         accountDetails[accountName].balance += msg.value;
+
+        // console.log("depositTo()");
+        // console.log(address(this));
+        // console.log("accountName: ", accountName);
+        // console.log(
+        //     "accountDetails[accountName].balance: ",
+        //     accountDetails[accountName].balance
+        // );
         emit Deposit(msg.sender, accountName, msg.value);
     }
 
@@ -229,8 +238,6 @@ contract Billing is ChainlinkClient, Ownable {
     {
         balance = accountDetails[accountName].balance;
     }
-
-    // Todo: Update known address or let knownAddresses be an array
 
     function withdraw(string calldata accountName, uint256 amount)
         external
@@ -258,28 +265,31 @@ contract Billing is ChainlinkClient, Ownable {
         returns (uint256 payment)
     {
         payment = usage * costPerUnit;
-        console.log("calculatePayment()");
-        console.log("usage: ", usage);
-        console.log("costPerUnit: ", costPerUnit);
-        console.log("payment: ", payment);
+        // console.log("calculatePayment()");
+        // console.log("usage: ", usage);
+        // console.log("costPerUnit: ", costPerUnit);
+        // console.log("payment: ", payment);
     }
 
     function calculateFee(uint256 payment) internal view returns (uint256 fee) {
         fee = (payment * anyRateFee) / 10000;
-        console.log("calculateFee()");
-        console.log("anyRateFee: ", anyRateFee);
-        console.log("fee: ", fee);
+        // console.log("calculateFee()");
+        // console.log("anyRateFee: ", anyRateFee);
+        // console.log("fee: ", fee);
     }
 
     // Pay treasuries specified amounts
-    // TODO: Getting called but not working in Web UI
-    function bill(string memory accountName, uint256 usage) public onlyOwner {
-        uint256 payment = calculatePayment(usage);
+    function bill(string memory accountName) public onlyOwner {
+        uint256 payment =
+            calculatePayment(accountDetails[accountName].usageReturned);
         uint256 fee = calculateFee(payment);
-        console.log(
-            "accountDetails[accountName].balance: ",
-            accountDetails[accountName].balance
-        );
+        // console.log("bill()");
+        // console.log(address(this));
+        // console.log("accountName: ", accountName);
+        // console.log(
+        //     "accountDetails[accountName].balance: ",
+        //     accountDetails[accountName].balance
+        // );
         if (accountDetails[accountName].balance < payment) {
             emit InsufficientFunds(
                 accountName,
@@ -294,13 +304,11 @@ contract Billing is ChainlinkClient, Ownable {
 
     // Iterate over accounts while deducting from each
     function billAll() public {
-        console.log("Billing.billAll()");
-        // for (uint256 i = 0; i < accountId; i++) {
-        // console.log("i: ", i);
-        // console.log("accountArray[i]: ", accountArray[i]);
-        // callChainlinkUsage(accountArray[i]);
-        bill("a", usageReturned);
-        // }
+        for (uint256 i = 0; i < accountId; i++) {
+            // console.log("i: ", i);
+            // console.log("accountArray[i]: ", accountArray[i]);
+            bill(accountArray[i]);
+        }
     }
 
     /////

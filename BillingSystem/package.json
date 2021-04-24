@@ -6,6 +6,7 @@
   "author": "Sam Hodak <slhodak@gmail.com>, Janson M",
   "license": "MIT",
   "scripts": {
+    "startnode": "npx hardhat node",
     "compile": "hardhat compile",
     "test": "hardhat test",
     "export-contracts": "cp build/AnyRateOracle.json ../client_app_cea/packages/contracts/src/abis/ && cp build/Billing.json ../client_app_cea/packages/contracts/src/abis/ && cp build/Treasury.json ../client_app_cea/packages/contracts/src/abis/"

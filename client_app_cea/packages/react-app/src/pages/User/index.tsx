@@ -16,7 +16,7 @@ import {
 
 const User = () => {
   const [companyName, setCompanyName] = useState("netflix");
-  const [userName, setUserName] = useState("b");
+  const [userName, setUserName] = useState("a");
   const [depositAmount, setDepositAmount] = useState(2);
   const [withdrawAmount, setWithdrawAmount] = useState(1);
   const [currentUsage, setCurrentUsage] = useState(0);

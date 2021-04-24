@@ -66,7 +66,8 @@ describe("Billing", () => {
     it("Should deduct ether on behalf of a user account when billing", async () => {
       const usageAmount = parseEther(formatEther("1")); // "1" as BigNumber; 1 wei
       const paymentAmount = usageAmount.mul(costPerUnit);
-      await billing.bill(accountName, usageAmount);
+      await billing.setUsage(accountName, usageAmount);
+      await billing.bill(accountName);
       // Expect payment to be deducted from Billing contract balance
       expect(
         (await signer.provider.getBalance(billing.address)).toString()
@@ -98,7 +99,8 @@ describe("Billing", () => {
         await formatEther(paymentAmount.sub(feeAmount))
       );
 
-      await billing.bill(accountName, usageAmount);
+      await billing.setUsage(accountName, usageAmount);
+      await billing.bill(accountName);
       // Expect payment - fee to be added to the business treasury balance
       expect(
         (await signer.provider.getBalance(bTreasury.address)).toString()
@@ -108,7 +110,8 @@ describe("Billing", () => {
     it("Should add calculated fee to the AnyRate treasury", async () => {
       const paymentAmount = usageAmount.mul(costPerUnit);
       const feeAmount = paymentAmount.mul(anyRateFee).div(10000);
-      await billing.bill(accountName, usageAmount);
+      await billing.setUsage(accountName, usageAmount);
+      await billing.bill(accountName);
       // Expect fee to be added to the AnyRate treasury balance
       expect(
         (await signer.provider.getBalance(aTreasury.address)).toString()

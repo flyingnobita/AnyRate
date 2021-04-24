@@ -110,14 +110,21 @@ const ClientBusiness = () => {
     setBillingContractWithSigner(_billingContract.connect(signer));
   }
 
+  // TODO: Move to Customer page
   async function getOracleUsage() {
     console.log("billingContract: ", billingContract);
-    let usageReturned = await billingContract.getUsageReturned();
+    let usageReturned = await billingContract.getUsageReturned("a");
     setOracleUsage(usageReturned);
   }
 
+  // TODO: Move to Customer page
   async function callChainlinkUsage() {
     await billingContractWithSigner.callChainlinkUsage("a");
+  }
+
+  // TODO: Move to Customer page
+  async function setOracleUsageOverride() {
+    await billingContractWithSigner.setUsage("a", 16);
   }
 
   const submitTransferTo = async () => {
@@ -305,6 +312,9 @@ const ClientBusiness = () => {
             <Box marginX={5}>
               <Button size="small" onClick={getOracleUsage}>
                 [Call Get Billing Address 1st!] Get Billing.getUsageReturned()
+              </Button>
+              <Button size="small" onClick={setOracleUsageOverride}>
+                [Call Get Billing Address 1st!] Manual Oracle Usage Override
               </Button>
             </Box>
           </Flex>
