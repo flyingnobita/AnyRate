@@ -2,6 +2,11 @@
 
 AnyRate provides a cost-efficient and intuitive interface to use the blockchain ecosystem for payments through templates.
 
+## Links
+
+[App Frontend](https://anyrate.netlify.app/#/)  
+[Chainlink Node Job Status for Chainlink Node used in repo](https://market.link/jobs/dbdf3273-aaf3-4b70-8fd1-6d55e856da24/runs?network=42)
+
 ## Inspiration
 
 It is hard for businesses to generate their own smart contracts for billing. Although businesses already have the data, they lack the technical expertise to generate smart contracts and manage the whole billing process that is taking place in and around the blockchain system.
